@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 // 2️⃣ CORS bien configurado
 app.use(cors({
-    origin: ["http://127.0.0.1:8100/", "http://localhost:8100/"],
+    origin: ["http://127.0.0.1:8100/", "http://localhost:8100"],
     credentials: true // 🔹 permite enviar cookies
 }));
 
@@ -40,7 +40,9 @@ db.connect(err => {
 app.post("/register", async (req, res) => {
     const { nombre, email, password, fecha } = req.body;
 
-    if (!nombre  !email  !password) return res.status(400).json({ error: "Faltan datos" });
+    if (!nombre || !email || !password || !fecha) {
+        return res.status(400).json({ error: "Faltan datos" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 

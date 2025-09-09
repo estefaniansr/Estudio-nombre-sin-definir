@@ -14,53 +14,51 @@
       <p class="subtitle">Únete a nosotros y comienza a disfrutar</p>
     </div>
 
-    <form class="credencial">
+    <form class="credencial" (ngSubmit)="registrarUsuario()">
+
       <ion-item>
         <ion-label position="floating">Nombre completo</ion-label>
-        <ion-input type="text" #nombre required></ion-input>
+        <ion-input type="text" [(ngModel)]="nombre" name="nombre" required></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Email</ion-label>
-        <ion-input type="email" #email required></ion-input>
+        <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Contraseña</ion-label>
-        <ion-input type="password" #password required></ion-input>
+        <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Repetir contraseña</ion-label>
-        <ion-input type="password" #reppassword required></ion-input>
+        <ion-input type="password" [(ngModel)]="repPassword" name="repPassword" required></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Fecha de nacimiento</ion-label>
-        <ion-input type="date" #fecha required></ion-input>
+        <ion-input type="date" [(ngModel)]="fecha" name="fecha" required></ion-input>
       </ion-item>
+
+      <ion-button class="btn-registrarse" expand="full" type="submit">
+        Registrarse
+      </ion-button>
     </form>
 
-    <ion-button class="btn-registrarse" expand="full" 
-                (click)="registrarUsuario(
-                  nombre.value?.toString() || '', 
-                  email.value?.toString() || '', 
-                  password.value?.toString() || '', 
-                  reppassword.value?.toString() || '', 
-                  fecha.value?.toString() || ''
-                )">
-      Registrarse
-    </ion-button>
 
     <div class="terminos">
-      <p>Al registrarte, aceptas nuestros <a href="#">Términos de servicio</a> y <a href="#">Política de privacidad</a></p>
+      <p>Al registrarte, aceptas nuestros <a href="#">Términos de servicio</a> y <a href="#">Política de privacidad</a>
+      </p>
     </div>
 
-    <div class="cuenta-btn">
-      <p class="cuenta-text">¿Ya tenés cuenta?</p>
-      <ion-button class="btn-iniciarSesion" (click)="redirigirATab1()" fill="clear">
-        Iniciar sesión
-      </ion-button>
+    <div class="Cuenta-btn">
+      <p class="Cuenta">
+        ¿Ya tenés cuenta?
+        <ion-button class="btn-iniciarSesion" (click)="irLogin()" fill="clear">
+          Iniciar sesión
+        </ion-button>
+      </p>
     </div>
   </div>
 </ion-content>
