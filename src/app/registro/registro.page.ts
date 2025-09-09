@@ -1,46 +1,55 @@
 import { Component } from '@angular/core';
-import { IonicModule } from '@ionic/angular'; // necesario para ion-header, ion-input, etc.
-import { CommonModule } from '@angular/common'; // necesario para *ngIf, *ngFor
+import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { AuthService, RegisterResponse } from '../services/auth.service';
 
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.page.html',
   styleUrls: ['./registro.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule] // FormsModule no hace falta si no usás ngModel
+  imports: [IonicModule, CommonModule, FormsModule]
 })
 export class RegistroPage {
 
-  constructor(private router: Router) {}
+  nombre: string = '';
+  email: string = '';
+  password: string = '';
+  repPassword: string = '';
+  fecha: string = '';
 
-  redirigirATab1() {
-    this.router.navigate(['/tab1']); // Navega a la ruta 'ta1'
-  }
+  constructor(private router: Router, private authService: AuthService) { }
 
-  registrarUsuario(nombre: string, email: string, password: string, repPassword: string, fecha: string) {
-    console.log('Intentando registrar usuario...');
-    
-    // validaciones básicas
-    if (!nombre || !email || !password || !repPassword || !fecha) {
-      console.log('Por favor, completa todos los campos');
+  registrarUsuario() {
+    // Validaciones básicas
+    if (!this.nombre || !this.email || !this.password || !this.repPassword || !this.fecha) {
+      alert('Por favor completá todos los campos');
       return;
     }
-    
-    if (password !== repPassword) {
-      console.log('Las contraseñas no coinciden');
+
+    if (this.password !== this.repPassword) {
+      alert('Las contraseñas no coinciden');
       return;
     }
-    
-    // simulación de registro exitoso
-    console.log('Usuario registrado exitosamente:', {
-      nombre,
-      email,
-      fechaNacimiento: fecha
-    });
-    
-    // Redirige al login después del registro
-    this.router.navigate(['/login']);
+
+    // Llamar al AuthService y tipar la respuesta
+    this.authService.register(this.nombre, this.email, this.password, this.fecha)
+      .subscribe({
+        next: (res: RegisterResponse) => {
+          alert(res.message || 'Registro exitoso 🎉');
+          this.router.navigate(['/tabs/tab1']);
+        },
+        error: (err: any) => { // <-- aquí tipamos como any, o ApiError si tu API es consistente
+          console.error(err);
+          alert(err.error?.error || 'Error en el registro');
+        }
+      });
+
   }
 
+  irLogin() {
+    this.router.navigate(['/tabs/tab1']); // Navegar a login
+  }
 }
