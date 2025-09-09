@@ -1,0 +1,153 @@
+/* fondo general*/
+.registro-content {
+  --background: #121212; 
+}
+
+/* contenedor formulario de registro */
+.registro-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+}
+
+/* logo y título registro */
+.logo-section {
+  text-align: center;
+  margin-bottom: 25px;
+  
+  /* círculo logo */
+  .logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 15px;
+    background: linear-gradient(135deg, #8000ff 0%, #5500cc 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* logo dentro*/
+    ion-icon {
+      font-size: 40px;
+      color: white;
+    }
+  }
+  
+  /* título principal */
+  h1 {
+    color: white;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    font-size: 24px;
+  }
+  
+  /* subtítulo */
+  .subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+/* formulario de credenciales */
+.credencial {
+  margin-bottom: 20px;
+  
+  /* campos de entrada (input) */
+  ion-item {
+    --background: transparent;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --color: white;
+    --highlight-color-focused: #8000ff;
+    --highlight-height: 2px;
+    margin-bottom: 15px;
+    
+    
+    ion-label {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    /* estilos inputs */
+    ion-input {
+      color: white;
+    }
+  }
+}
+
+/* botón al registrarse */
+.btn-registrarse {
+  --border-radius: 25px;
+  --background: #8000ff;
+  --background-activated: #6a00d4; 
+  --background-focused: #6a00d4; 
+  --background-hover: #6a00d4; 
+  --color: white;
+  --box-shadow: 0 4px 12px rgba(128, 0, 255, 0.4);
+  font-weight: 600;
+  height: 50px;
+  margin-bottom: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  
+  
+  &:hover {
+    transform: translateY(-2px);
+    --box-shadow: 0 6px 16px rgba(128, 0, 255, 0.5);
+  }
+}
+
+/* términos y condiciones */
+.terminos {
+  text-align: center;
+  margin-bottom: 25px;
+  
+  p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    margin: 0;
+    line-height: 1.4;
+  }
+  
+  a {
+    color: #8000ff;
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* estilos contenedor "¿Ya tenés cuenta?" */
+.cuenta-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 20px;
+  
+  /* estilo texto "¿Ya tenés cuenta?" */
+  .cuenta-text {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    font-size: 14px;
+  }
+  
+  /* estilos iniciar sesión */
+  .btn-iniciarSesion {
+    --color: #8000ff;
+    --color-hover: #c994ff; 
+    font-weight: 600;
+    height: auto;
+    margin: 0;
+  }
+}
+
+/* Estilos para el campo de fecha*/
+ion-input[type="date"] {
+  color-scheme: dark; 
+}

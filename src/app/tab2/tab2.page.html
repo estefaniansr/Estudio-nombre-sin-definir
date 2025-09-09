@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mis Materias</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Botón para agregar materia -->
+  <ion-button expand="full" (click)="agregarMateria()">Agregar Materia</ion-button>
+
+  <!-- Contenedor de materias en fila -->
+  <div class="materias-container">
+    <ion-card *ngFor="let materia of materias">
+      <img [src]="materia.imagen" />
+      <ion-card-header>
+        <ion-card-title>
+          <ion-input [(ngModel)]="materia.nombre" placeholder="Nombre de la materia"></ion-input>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-textarea [(ngModel)]="materia.descripcion" placeholder="Descripción de la materia"></ion-textarea>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+</ion-content>
