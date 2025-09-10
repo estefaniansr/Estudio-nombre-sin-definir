@@ -13,19 +13,37 @@ import { FormsModule } from '@angular/forms';
 })
 export class Tab1Page {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   iniciarSesion(usuario: string, password: string) {
-    console.log('Usuario:', usuario);
-    console.log('Password:', password);
-
     if (!usuario || !password) {
       alert('Completa todos los campos');
       return;
     }
 
-    this.router.navigate(['/tabs/tab2']); // redirige a Inicio
+    fetch('http://127.0.0.1:3000/login', {
+      method: 'POST',
+      credentials: 'include', // para cookies de sesión
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: usuario, password })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+        } else {
+          console.log('Login exitoso', data);
+          this.router.navigate(['/tabs/tab2']); // redirige solo si login OK
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error al conectarse al servidor');
+      });
   }
+
 
   irRegistro() {
     this.router.navigate(['/registro']); // Página de registro fuera de tabs

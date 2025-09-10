@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 // 2️⃣ CORS bien configurado
 app.use(cors({
     origin: ["http://127.0.0.1:8100/", "http://localhost:8100"],
-    credentials: true // 🔹 permite enviar cookies
+    credentials: true 
 }));
 
 // 3️⃣ Session antes de las rutas
@@ -26,18 +26,21 @@ app.use(session({
 
 // Conexión a MySQL
 const db = mysql.createConnection({
-    host: "localhost",
+    host: "maglev.proxy.rlwy.net",
     user: "root",
-    password: "1306", // base de datos contraseña
-    database: "tp" // nombre de base de datos
+    password: "KXHnyaffxvTyZZzbHOFlgPKEdvOLAJFF",
+    database: "tp",
+    port: 17290
 });
+
 db.connect(err => {
     if (err) throw err;
-    console.log("Conectado a MySQL ✅");
+    console.log("Conectado a la base de datos");
 });
 
 // Registro
 app.post("/register", async (req, res) => {
+    console.log("Datos recibidos:", req.body);
     const { nombre, email, password, fecha } = req.body;
 
     if (!nombre || !email || !password || !fecha) {
@@ -48,13 +51,14 @@ app.post("/register", async (req, res) => {
 
     db.query(
         "INSERT INTO usuarios (nombre, email, password, fecha) VALUES (?, ?, ?, ?)",
-        [nombre, email, hashedPassword, fecha], // 🔹 usar hashed password
+        [nombre, email, hashedPassword, fecha], // usar hashed password
         (err, result) => {
             if (err) {
+                console.error("Error en INSERT:", err);
                 if (err.code === "ER_DUP_ENTRY") return res.status(400).json({ error: "El email ya está registrado" });
                 return res.status(500).json({ error: "Error en el servidor" });
             }
-            res.json({ message: "Usuario registrado con éxito ✅" });
+            res.json({ message: "Usuario registrado con éxito " });
         }
     );
 });
