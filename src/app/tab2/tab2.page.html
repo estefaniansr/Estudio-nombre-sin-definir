@@ -6,20 +6,31 @@
 
 <ion-content class="ion-padding">
 
-  <!-- Botón para agregar materia -->
   <ion-button expand="full" (click)="agregarMateria()">Agregar Materia</ion-button>
 
-  <!-- Contenedor de materias en fila -->
-  <div class="materias-container">
-    <ion-card *ngFor="let materia of materias">
+  <div class="materias-container" *ngFor="let materia of materias">
+    <ion-card (click)="toggleExpandir(materia)">
       <img [src]="materia.imagen" />
       <ion-card-header>
-        <ion-card-title>
-          <ion-input [(ngModel)]="materia.nombre" placeholder="Nombre de la materia"></ion-input>
-        </ion-card-title>
+        <ion-card-title>{{ materia.nombre }}</ion-card-title>
       </ion-card-header>
-      <ion-card-content>
+      <ion-card-content *ngIf="materia.expandida">
         <ion-textarea [(ngModel)]="materia.descripcion" placeholder="Descripción de la materia"></ion-textarea>
+
+        <ion-list>
+          <ion-item *ngFor="let titulo of materia.titulos; let i = index">
+            {{ titulo }}
+            <ion-button slot="end" color="danger" fill="clear" size="small" (click)="eliminarTitulo(materia, i)">
+              Eliminar
+            </ion-button>
+          </ion-item>
+        </ion-list>
+
+        <ion-item>
+          <ion-input #nuevoTitulo placeholder="Nuevo título"></ion-input>
+          <ion-button slot="end" (click)="agregarTitulo(materia, nuevoTitulo)">Agregar</ion-button>
+        </ion-item>
+
       </ion-card-content>
     </ion-card>
   </div>
