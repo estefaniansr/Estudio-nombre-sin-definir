@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 // 2️⃣ CORS bien configurado
 app.use(cors({
-    origin: ["http://127.0.0.1:8100/", "http://localhost:8100"],
+    origin: ["http://127.0.0.1:8100", "http://localhost:8100"],
     credentials: true 
 }));
 
@@ -95,6 +95,22 @@ app.post("/logout", (req, res) => {
         res.json({ message: "Sesión cerrada con éxito" });
     });
 });
+
+
+app.get("/me", (req, res) => {
+    if (!req.session.userId) return res.json({ logged: false });
+    
+    db.query(
+        "SELECT id, nombre, email FROM usuarios WHERE id = ?",
+        [req.session.userId],
+        (err, results) => {
+            if (err) return res.status(500).json({ error: "Error en el servidor" });
+            if (results.length === 0) return res.json({ logged: false });
+            res.json({ logged: true, user: results[0] });
+        }
+    );
+});
+
 app.listen(3000, () => {
     console.log("Servidor corriendo en http://127.0.0.1:3000/ 🚀");
 });
