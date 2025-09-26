@@ -1,9 +1,13 @@
+// src/app/tab1/tab1.page.ts
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from '../../firebase-config'; // Asegurate de que esta ruta sea correcta
 
 @Component({
   selector: 'app-tab1',
@@ -26,7 +30,6 @@ export class Tab1Page {
       .subscribe({
         next: (res: any) => {
           console.log('Login exitoso:', res);
-          // Redirigir a tabs (TabsPage) después del login
           this.router.navigate(['/tabs/tab2']);
         },
         error: (err) => {
@@ -36,7 +39,24 @@ export class Tab1Page {
       });
   }
 
+  async loginConGoogle() {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      console.log('Login con Google exitoso:', user);
+      alert(`Bienvenido, ${user.displayName}`);
+      
+      // Aquí podrías enviar el user.email a tu backend si querés registrarlo/loguearlo
+      this.router.navigate(['/tabs/tab2']);
+    } catch (error) {
+      console.error('Error al iniciar sesión con Google:', error);
+      alert('No se pudo iniciar sesión con Google');
+    }
+  }
+
   irRegistro() {
-    this.router.navigate(['/registro']); // Página de registro fuera de tabs
+    this.router.navigate(['/registro']);
   }
 }
