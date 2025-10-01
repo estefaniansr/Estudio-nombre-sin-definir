@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase-config'; // Asegurate de que esta ruta sea correcta
 
 @Component({
@@ -17,8 +17,13 @@ import { auth } from '../../firebase-config'; // Asegurate de que esta ruta sea 
   imports: [IonicModule, CommonModule, FormsModule, HttpClientModule]
 })
 export class Tab1Page {
-
-  constructor(private router: Router, private http: HttpClient) { }
+  user: User | null = null;
+constructor(private router: Router, private http: HttpClient) {
+    // Detecta si ya hay un usuario logueado
+    onAuthStateChanged(auth, (u) => {
+      this.user = u;
+    });
+  }
 
   iniciarSesion(usuario: string, password: string) {
     if (!usuario || !password) {
@@ -43,16 +48,22 @@ export class Tab1Page {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+      this.user = result.user; // guardamos el usuario
 
-      console.log('Login con Google exitoso:', user);
-      alert(`Bienvenido, ${user.displayName}`);
-      
-      // Aquí podrías enviar el user.email a tu backend si querés registrarlo/loguearlo
+      console.log('Login con Google exitoso:', this.user);
       this.router.navigate(['/tabs/tab2']);
     } catch (error) {
       console.error('Error al iniciar sesión con Google:', error);
       alert('No se pudo iniciar sesión con Google');
+    }
+  }
+
+  async logout() {
+    try {
+      await auth.signOut();
+      this.user = null;
+    } catch (error) {
+      console.error('Error cerrando sesión:', error);
     }
   }
 

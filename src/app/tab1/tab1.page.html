@@ -1,12 +1,14 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Logi</ion-title>
+    <ion-title *ngIf="!user">Login</ion-title>
+    <ion-title *ngIf="user">Perfil</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="login-content">
 
-  <div class="login-container">
+  <!-- VISTA LOGIN -->
+  <div *ngIf="!user" class="login-container">
     <div class="logo-container">
       <div class="logo">
         <ion-icon name="book-notes"></ion-icon>
@@ -34,19 +36,31 @@
     <ion-button class="recuperarContraseña" expand="full" fill="clear">Olvidé la contraseña</ion-button>
 
     <div class="aux">
-      <span>Inicia sesion con</span>
+      <span>Inicia sesión con</span>
     </div>
 
-   <ion-button class="google" fill="clear" (click)="loginConGoogle()">
-  <ion-icon slot="start" name="logo-google"></ion-icon>
-</ion-button>
-
+    <ion-button class="google" fill="clear" (click)="loginConGoogle()">
+      <ion-icon slot="start" name="logo-google"></ion-icon>
+    </ion-button>
 
     <div class="noCuenta-btn">
-      <p class="noCuenta">
-        ¿No tenés cuenta? 
-      </p>
+      <p class="noCuenta">¿No tenés cuenta?</p>
       <ion-button class="btn-registrarse" (click)="irRegistro()" fill="clear">Registrarse</ion-button>
     </div>
   </div>
+
+  <!-- VISTA PERFIL -->
+  <div *ngIf="user" class="perfil-container ion-padding">
+    <h2>Bienvenido, {{ user.displayName }}</h2>
+
+    <ion-avatar>
+      <img [src]="user.photoURL" alt="Foto de perfil" />
+    </ion-avatar>
+
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>UID:</strong> {{ user.uid }}</p>
+
+    <ion-button expand="block" color="danger" (click)="logout()">Cerrar sesión</ion-button>
+  </div>
+
 </ion-content>
