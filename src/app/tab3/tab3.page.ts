@@ -1,27 +1,30 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../firebase-config'; // Asegurate de que la ruta sea correcta
+import { IonicModule } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { Materia } from '../models/materia.model';
 
 @Component({
   selector: 'app-tab3',
-  templateUrl: 'tab3.page.html',
-  styleUrls: ['tab3.page.scss'],
-  standalone: false,
+  templateUrl: './tab3.page.html',
+  styleUrls: ['./tab3.page.scss'],
+  standalone: true,
+  imports: [IonicModule, CommonModule]
 })
+
+
 export class Tab3Page {
+  favoritos: Materia[] = [];
 
-  constructor(private router: Router) {}
+  constructor() {
+    this.cargarFavoritos();
+  }
 
-  cerrarSesion() {
-    signOut(auth)
-      .then(() => {
-        alert('Sesión cerrada 👋');
-        this.router.navigate(['/tabs/tab1']); // O donde tengas tu login
-      })
-      .catch((error) => {
-        console.error('Error al cerrar sesión:', error);
-        alert('Error al cerrar sesión');
-      });
+  cargarFavoritos() {
+    const data = localStorage.getItem('materias');
+    if (data) {
+      const materias: Materia[] = JSON.parse(data);
+      this.favoritos = materias.filter(m => m.favorito);
+    }
   }
 }
+
