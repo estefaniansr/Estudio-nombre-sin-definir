@@ -3,7 +3,8 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthService, RegisterResponse } from '../services/auth.service';
+import { createUserWithEmailAndPassword, User } from 'firebase/auth';
+import { auth } from '../../firebase-config';
 
 @Component({
   selector: 'app-registro',
@@ -14,18 +15,18 @@ import { AuthService, RegisterResponse } from '../services/auth.service';
 })
 export class RegistroPage {
 
-  nombre: string = '';
   email: string = '';
   password: string = '';
   repPassword: string = '';
+  nombre: string = '';
   fecha: string = '';
 
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(private router: Router) {}
 
-  registrarUsuario() {
-    // Validaciones básicas
-    if (!this.nombre || !this.email || !this.password || !this.repPassword || !this.fecha) {
-      alert('Por favor completá todos los campos');
+  // 🔹 Aquí está el método que tu HTML llama
+  async registrarUsuario() {
+    if (!this.email || !this.password || !this.repPassword) {
+      alert('Completa todos los campos');
       return;
     }
 
@@ -34,22 +35,19 @@ export class RegistroPage {
       return;
     }
 
-    // Llamar al AuthService y tipar la respuesta
-    this.authService.register(this.nombre, this.email, this.password, this.fecha)
-      .subscribe({
-        next: (res: RegisterResponse) => {
-          alert(res.message || 'Registro exitoso 🎉');
-          this.router.navigate(['/tabs/tab1']);
-        },
-        error: (err: any) => { // <-- aquí tipamos como any, o ApiError si tu API es consistente
-          console.error(err);
-          alert(err.error?.error || 'Error en el registro');
-        }
-      });
-
+    try {
+      const result = await createUserWithEmailAndPassword(auth, this.email, this.password);
+      const user: User = result.user;
+      console.log('Usuario registrado:', user);
+      alert('Registro exitoso 🎉');
+      this.router.navigate(['/tabs/tab1']);
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || 'Error al registrarse');
+    }
   }
 
   irLogin() {
-    this.router.navigate(['/tabs/tab1']); // Navegar a login
+    this.router.navigate(['/tabs/tab1']);
   }
 }
