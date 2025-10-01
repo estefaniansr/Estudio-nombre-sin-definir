@@ -5,15 +5,32 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-
   <ion-button expand="full" (click)="agregarMateria()">Agregar Materia</ion-button>
 
-  <div class="materias-container" *ngFor="let materia of materias">
-    <ion-card (click)="toggleExpandir(materia)">
+  <div class="materias-container">
+    <ion-card *ngFor="let materia of materias">
       <img [src]="materia.imagen" />
       <ion-card-header>
         <ion-card-title>{{ materia.nombre }}</ion-card-title>
+
+        <!-- Contenedor para los botones -->
+        <div class="acciones">
+          <!-- Botón abrir/cerrar -->
+          <ion-button fill="clear" size="small" (click)="toggleExpandir(materia)">
+            <span class="flecha">{{ materia.expandida ? 'Cerrar' : 'Abrir' }}</span>
+          </ion-button>
+
+          <ion-button fill="clear" size="small" (click)="editarMateria(materia)">
+            Editar
+          </ion-button>
+
+          <!-- Botón eliminar materia -->
+          <ion-button fill="clear" size="small" color="danger" (click)="eliminarMateria(materia)">
+            Eliminar
+          </ion-button>
+        </div>
       </ion-card-header>
+
       <ion-card-content *ngIf="materia.expandida">
         <ion-textarea [(ngModel)]="materia.descripcion" placeholder="Descripción de la materia"></ion-textarea>
 
@@ -31,8 +48,10 @@
           <ion-button slot="end" (click)="agregarTitulo(materia, nuevoTitulo)">Agregar</ion-button>
         </ion-item>
 
+        <ion-button expand="full" color="warning" (click)="toggleFavorito(materia)">
+          {{ materia.favorito ? 'Quitar de Favoritos' : 'Agregar a Favoritos' }}
+        </ion-button>
       </ion-card-content>
     </ion-card>
   </div>
-
 </ion-content>
