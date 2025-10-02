@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title *ngIf="!user">Login</ion-title>
-   <!-- <ion-title *ngIf="user">Perfil</ion-title>--> 
+    <ion-title *ngIf="user">Perfil</ion-title>
 
   </ion-toolbar>
 </ion-header>
@@ -14,36 +14,37 @@
       <div class="logo">
         <ion-icon name="book-notes"></ion-icon>
       </div>
-      <h1 class="h1">Bienvenido</h1>
+      <h1 class="bienvenido">Bienvenido</h1>
     </div>
 
     <form class="credencial">
-      <ion-item>
-        <ion-label position="floating">Usuario</ion-label>
-        <ion-input type="text" #usuario required></ion-input>
+      <ion-item class="usuario">
+        <ion-input type="text" id="usuario" placeholder="Usuario" #usuario required></ion-input>
       </ion-item>
 
-      <ion-item>
-        <ion-label position="floating">Contraseña</ion-label>
-        <ion-input type="password" #password required></ion-input>
+      <ion-item class="contraseña">
+        <ion-input type="password" id="password" placeholder="Contraseña" #password required></ion-input>
       </ion-item>
     </form>
 
-    <ion-button class="btn-iniciarSesion" expand="full"
+    <ion-button class="btn-iniciarSesion" expand="full" fill="clear"
       (click)="iniciarSesion(usuario.value?.toString() || '', password.value?.toString() || '')">
       Iniciar sesión
     </ion-button>
 
-    <ion-button class="recuperarContraseña" expand="full" fill="clear">Olvidé la contraseña</ion-button>
-
     <div class="aux">
-      <span>Inicia sesión con</span>
+      <span>Inicia sesión con:</span>
     </div>
 
-    <ion-button class="google" fill="clear" (click)="loginConGoogle()">
-      <ion-icon slot="start" name="logo-google"></ion-icon>
-    </ion-button>
+    <div class="redes">
+      <ion-button class="google" fill="clear" (click)="loginConGoogle()">
+        <ion-icon slot="start" name="logo-google"></ion-icon>
+      </ion-button>
 
+      <ion-button class="gh" fill="clear" (click)="loginConGithub()">
+        <ion-icon slot="start" name="logo-github"></ion-icon>
+      </ion-button>
+    </div>
     <div class="noCuenta-btn">
       <p class="noCuenta">¿No tenés cuenta?</p>
       <ion-button class="btn-registrarse" (click)="irRegistro()" fill="clear">Registrarse</ion-button>
@@ -61,7 +62,9 @@
     <p><strong>Email:</strong> {{ user.email }}</p>
     <p><strong>UID:</strong> {{ user.uid }}</p>
 
-    <ion-button expand="block" color="danger" (click)="logout()">Cerrar sesión</ion-button>
+    <ion-button expand="block" color="danger" (click)="logout()">
+      <ion-icon name="exit-outline"></ion-icon>
+    </ion-button>
   </div>
 
 </ion-content>
