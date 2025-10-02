@@ -1,0 +1,19 @@
+/* ======== FAVORITOS 3 columnas  ========== */
+.materias-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+  gap: 16px;
+}
+/* ======== FAVORITOS ajustar segun contenido ========== */
+.materias-container ion-card {
+  height: auto; /* que se ajuste al contenido */
+}
+
+
+/* ======== FAVORITOS imagenes = tamaño en todas las cards========== */
+.materias-container ion-img {
+  width: 100%;
+  height: 150px; /* o el alto que quieras */
+  object-fit: contain; /* muestra toda la imagen */
+  background: #f0f0f0; /* opcional, para que se vea bien si hay espacio vacío */
+}
