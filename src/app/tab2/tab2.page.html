@@ -9,24 +9,36 @@
 
   <div class="materias-container">
     <ion-card *ngFor="let materia of materias">
-      <img [src]="materia.imagen" />
+      <img [src]="materia.imagen" alt="Foto de materia" class="materia-img">
+
+      <div class="btn-img">
+        <!-- Botón para abrir selector de archivos -->
+        <ion-button (click)="cambiarFotoMateria(materia)">
+        <ion-icon name="cloud-upload-outline"></ion-icon>
+        </ion-button>
+
+        <ion-button (click)="eliminarFoto(materia)">
+          <ion-icon name="trash-bin-outline"></ion-icon>
+        </ion-button>
+      </div>
       <ion-card-header>
         <ion-card-title>{{ materia.nombre }}</ion-card-title>
 
         <!-- Contenedor para los botones -->
         <div class="acciones">
           <!-- Botón abrir/cerrar -->
-          <ion-button fill="clear" size="small" (click)="toggleExpandir(materia)">
-            <span class="flecha">{{ materia.expandida ? 'Cerrar' : 'Abrir' }}</span>
+          <ion-button fill="clear" size="small" (click)="toggleExpandir(materia)" class="expandir">
+            <ion-icon [name]="materia.expandida ? 'chevron-up-outline' : 'chevron-down-outline'">
+            </ion-icon>
           </ion-button>
 
-          <ion-button fill="clear" size="small" (click)="editarMateria(materia)">
-            Editar
+          <ion-button fill="clear" size="small" (click)="editarMateria(materia)" class="editar">
+            <ion-icon name="pencil-outline"></ion-icon>
           </ion-button>
 
           <!-- Botón eliminar materia -->
-          <ion-button fill="clear" size="small" color="danger" (click)="eliminarMateria(materia)">
-            Eliminar
+          <ion-button fill="clear" size="small" color="danger" (click)="eliminarMateria(materia)" class="eliminar">
+            <ion-icon name="trash-bin-outline"></ion-icon>
           </ion-button>
         </div>
       </ion-card-header>
@@ -38,18 +50,21 @@
           <ion-item *ngFor="let titulo of materia.titulos; let i = index">
             {{ titulo }}
             <ion-button slot="end" color="danger" fill="clear" size="small" (click)="eliminarTitulo(materia, i)">
-              Eliminar
+              <ion-icon name="trash-bin-outline"></ion-icon>
             </ion-button>
           </ion-item>
         </ion-list>
 
         <ion-item>
           <ion-input #nuevoTitulo placeholder="Nuevo título"></ion-input>
-          <ion-button slot="end" (click)="agregarTitulo(materia, nuevoTitulo)">Agregar</ion-button>
+          <ion-button slot="end" (click)="agregarTitulo(materia, nuevoTitulo)">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-button>
         </ion-item>
 
         <ion-button expand="full" color="warning" (click)="toggleFavorito(materia)">
-          {{ materia.favorito ? 'Quitar de Favoritos' : 'Agregar a Favoritos' }}
+          <ion-icon [name]="materia.favorito ? 'heart-dislike-outline' : 'heart-outline'">
+          </ion-icon>
         </ion-button>
       </ion-card-content>
     </ion-card>

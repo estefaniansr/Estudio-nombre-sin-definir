@@ -4,7 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { User, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth';
+import { User, signInWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase-config'; // Asegurate de que esta ruta sea correcta
 
 @Component({
@@ -52,6 +52,20 @@ export class Tab1Page {
     } catch (error) {
       console.error('Error al iniciar sesión con Google:', error);
       alert('No se pudo iniciar sesión con Google');
+    }
+  }
+
+  async loginConGithub() {
+    const provider = new GithubAuthProvider();
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      this.user = result.user; // guardamos el usuario
+      console.log('Login con GitHub exitoso:', this.user);
+      this.router.navigate(['/tabs/tab2']);
+    } catch (error: any) {
+      console.error('Error al iniciar sesión con GitHub:', error);
+      alert(error.message || 'No se pudo iniciar sesión con GitHub');
     }
   }
 
