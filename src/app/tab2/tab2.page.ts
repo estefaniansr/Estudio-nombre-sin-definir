@@ -74,12 +74,6 @@ export class Tab2Page {
 
   async cambiarFotoMateria(materia: Materia) {
     try {
-      const permResult = await Camera.requestPermissions();
-
-      if (permResult.photos !== 'granted') {
-        alert('Necesitamos permisos para acceder a tus fotos');
-        return;
-      }
       const image = await Camera.getPhoto({
         quality: 90,
         allowEditing: false,
