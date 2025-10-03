@@ -26,5 +26,6 @@ export class Tab3Page {
       this.favoritos = materias.filter(m => m.favorito);
     }
   }
+
 }
 

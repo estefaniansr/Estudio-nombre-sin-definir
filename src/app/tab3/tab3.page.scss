@@ -1,19 +1,32 @@
-/* ======== FAVORITOS 3 columnas  ========== */
+ion-header {
+  text-align: center;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+/* ===== Contenedor de materias ===== */
 .materias-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
-  gap: 16px;
-}
-/* ======== FAVORITOS ajustar segun contenido ========== */
-.materias-container ion-card {
-  height: auto; /* que se ajuste al contenido */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
 
+/* ===== Tarjeta de materia ===== */
 
-/* ======== FAVORITOS imagenes = tamaño en todas las cards========== */
-.materias-container ion-img {
+ion-card {
+  background: #141a1e;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.materia-img {
   width: 100%;
-  height: 150px; /* o el alto que quieras */
-  object-fit: contain; /* muestra toda la imagen */
-  background: #f0f0f0; /* opcional, para que se vea bien si hay espacio vacío */
+  height: 180px;
+  object-fit: cover;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
