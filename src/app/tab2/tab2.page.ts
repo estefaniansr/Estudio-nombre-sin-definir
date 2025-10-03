@@ -24,17 +24,21 @@ async subirArchivo(materia: Materia) {
     try {
       const result: any = await this.filestackService.openPicker();
       const fileUrl = result.filesUploaded[0].url;
-
+ const nombreArchivo = prompt('Ingresa un nombre para el archivo:')?.trim() || 'Archivo sin nombre';
+ 
       if (!materia.archivos) {
         materia.archivos = [];
       }
-      materia.archivos.push(fileUrl);
-
-      this.guardarMaterias();
-    } catch (error) {
-      console.error('Error subiendo archivo:', error);
-    }
+      materia.archivos.push({ url: fileUrl, nombre: nombreArchivo });
+    this.guardarMaterias();
+  } catch (error) {
+    console.error('Error subiendo archivo:', error);
   }
+  }
+  eliminarArchivo(materia: Materia, archivo: { url: string, nombre: string }) {
+  materia.archivos = materia.archivos?.filter(a => a.url !== archivo.url);
+  this.guardarMaterias();
+}
 
   agregarMateria() {
     const nuevaMateria: Materia = {
@@ -118,4 +122,5 @@ async subirArchivo(materia: Materia) {
       this.materias = JSON.parse(data);
     }
   }
+  
 }

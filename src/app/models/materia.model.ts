@@ -1,3 +1,7 @@
+export interface Archivo {
+  url: string;
+  nombre: string;
+}
 export interface Materia {
   nombre: string;
   descripcion: string;
@@ -5,5 +9,5 @@ export interface Materia {
   titulos: string[];
   expandida: boolean;
   favorito: boolean;
-  archivos?: string[]; // URLs de archivos subidos a Filestack
+  archivos?:  Archivo[]; // URLs de archivos subidos a Filestack
 }

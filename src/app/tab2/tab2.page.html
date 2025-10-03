@@ -71,8 +71,13 @@
         <ion-list *ngIf="materia.archivos?.length">
           <ion-item *ngFor="let archivo of materia.archivos">
             <ion-label>
-              <a [href]="archivo" target="_blank">{{ archivo }}</a>
+             <!-- Mostramos el nombre y el link -->
+      <a [href]="archivo.url" target="_blank">{{ archivo.nombre }}</a>
             </ion-label>
+             <!-- Botón para eliminar el archivo -->
+    <ion-button fill="clear" color="danger" (click)="eliminarArchivo(materia, archivo)">
+      Eliminar
+    </ion-button>
           </ion-item>
         </ion-list>
 
