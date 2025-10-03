@@ -4,8 +4,8 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { User, signInWithEmailAndPassword, getAuth, GithubAuthProvider, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../firebase-config'; // Asegurate de que esta ruta sea correcta
+import { User, signInWithEmailAndPassword, getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, GithubAuthProvider } from 'firebase/auth';
+import { auth } from '../../firebase-config'; 
 
 @Component({
   selector: 'app-tab1',

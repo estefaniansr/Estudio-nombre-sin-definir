@@ -1,153 +1,162 @@
-/* fondo general*/
-.registro-content {
-  --background: #121212; 
+:root {
+  --violeta: #8000ff;
+  --violeta-dark: #5500cc;
+  --blanco: #fffffc;
+  --gris-suave: rgba(255, 255, 252, 0.7);
+  --fondo: #0b1215;
 }
 
-/* contenedor formulario de registro */
-.registro-container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: center;
-}
-
-/* logo y título registro */
-.logo-section {
+/* ====== HEADER ===== */
+ion-header {
   text-align: center;
-  margin-bottom: 25px;
-  
-  /* círculo logo */
-  .logo {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 15px;
-    background: linear-gradient(135deg, #8000ff 0%, #5500cc 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    /* logo dentro*/
-    ion-icon {
-      font-size: 40px;
-      color: white;
-    }
-  }
-  
-  /* título principal */
-  h1 {
-    color: white;
-    font-weight: 700;
-    margin: 0 0 8px 0;
-    font-size: 24px;
-  }
-  
-  /* subtítulo */
-  .subtitle {
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0;
-    font-size: 14px;
-  }
-}
-
-/* formulario de credenciales */
-.credencial {
-  margin-bottom: 20px;
-  
-  /* campos de entrada (input) */
-  ion-item {
-    --background: transparent;
-    --border-color: rgba(255, 255, 255, 0.1);
-    --color: white;
-    --highlight-color-focused: #8000ff;
-    --highlight-height: 2px;
-    margin-bottom: 15px;
-    
-    
-    ion-label {
-      color: rgba(255, 255, 255, 0.7) !important;
-    }
-    
-    /* estilos inputs */
-    ion-input {
-      color: white;
-    }
-  }
-}
-
-/* botón al registrarse */
-.btn-registrarse {
-  --border-radius: 25px;
-  --background: #8000ff;
-  --background-activated: #6a00d4; 
-  --background-focused: #6a00d4; 
-  --background-hover: #6a00d4; 
-  --color: white;
-  --box-shadow: 0 4px 12px rgba(128, 0, 255, 0.4);
+  background: var(--fondo);
+  color: var(--blanco);
   font-weight: 600;
-  height: 50px;
-  margin-bottom: 20px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  
-  
-  &:hover {
-    transform: translateY(-2px);
-    --box-shadow: 0 6px 16px rgba(128, 0, 255, 0.5);
-  }
+  font-size: 18px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* términos y condiciones */
-.terminos {
-  text-align: center;
-  margin-bottom: 25px;
-  
-  p {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 12px;
-    margin: 0;
-    line-height: 1.4;
-  }
-  
-  a {
-    color: #8000ff;
-    text-decoration: none;
-    
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
 
-/* estilos contenedor "¿Ya tenés cuenta?" */
-.cuenta-btn {
+/* ======== VISTA REGISTRO ======== */
+
+/* ====== CUERPO ====== */
+.registro-content {
+  --background: var(--fondo);
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 20px;
-  
-  /* estilo texto "¿Ya tenés cuenta?" */
-  .cuenta-text {
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0;
-    font-size: 14px;
-  }
-  
-  /* estilos iniciar sesión */
-  .btn-iniciarSesion {
-    --color: #8000ff;
-    --color-hover: #c994ff; 
-    font-weight: 600;
-    height: auto;
-    margin: 0;
-  }
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 16px;
 }
 
-/* Estilos para el campo de fecha*/
-ion-input[type="date"] {
-  color-scheme: dark; 
+/* === LOGIN CONTAINER === */
+.registro-container {
+  width: 100%;
+  max-width: 380px;
+  padding: 30px;
+  position: relative;
+  top: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px solid var(--violeta);
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: auto;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
 }
+
+.bienvenido {
+  color: var(--blanco);
+  font-weight: 700;
+  margin: 0;
+  font-size: 28px;
+  text-align: center;
+  position: relative;
+  top: -20px;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  color: rgba(255, 255, 252, 0.7);
+}
+
+/* === FORMULARIO === */
+.credencial {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+
+.nombre,
+.email, .password, .rep, .fecha {
+  --background: transparent;
+  --color: #fffffc;
+  border-radius: 12px;
+  padding: 5px;
+  transition: all 0.4s ease;
+}
+
+.nombre:hover,
+.email:hover,
+.password:hover,
+.rep:hover,
+.fecha:hover,
+.nombre:focus,
+.email:focus,
+.password:focus,
+.rep:focus,
+.fecha:focus {
+  border: 1px solid rgb(128, 0, 255, 0.6);
+  padding: 5px;
+}
+
+
+/* === BOTÓN LOGIN === */
+
+.btn-registrarse {
+  padding: 5px;
+  border-radius: 14px;
+  font-weight: 600;
+  width: 100%;
+  background: rgb(28, 1, 65);
+  color: var(--blanco);
+  transition: all 0.3s ease;
+}
+
+.btn-registrarse:hover {
+  background: #4d0199;
+  border-color: var(--violeta);
+  /* efecto hover */
+  transform: translateY(-1px);
+}
+
+
+/* === terminos === */
+
+.terminos {
+  font-size: 13px;
+  color: rgba(255, 255, 252, 0.7);
+}
+
+
+/* ======== ya cuenta ========== */
+.Cuenta-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+  margin-top: auto;
+  position: relative;
+  top: -25px;
+}
+
+.Cuenta {
+  color: rgba(255, 255, 252, 0.7);
+  font-size: 12px;
+}
+
+.btn-iniciarSesion {
+  color: rgba(255, 255, 252, 0.7);
+  ;
+  font-weight: 600;
+  font-size: 10px;
+  background: transparent;
+  position: relative;
+  right: 4%;
+  top: -3.4px;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-iniciarSesion:hover {
+  color: #8000ff;
+  text-decoration: none;
+} 

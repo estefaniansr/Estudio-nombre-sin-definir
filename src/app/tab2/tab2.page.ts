@@ -20,25 +20,25 @@ export class Tab2Page {
   constructor(private filestackService: FilestackService) {
     this.cargarMaterias();
   }
-async subirArchivo(materia: Materia) {
+  async subirArchivo(materia: Materia) {
     try {
       const result: any = await this.filestackService.openPicker();
       const fileUrl = result.filesUploaded[0].url;
- const nombreArchivo = prompt('Ingresa un nombre para el archivo:')?.trim() || 'Archivo sin nombre';
- 
+      const nombreArchivo = prompt('Ingresa un nombre para el archivo:')?.trim() || 'Archivo sin nombre';
+
       if (!materia.archivos) {
         materia.archivos = [];
       }
       materia.archivos.push({ url: fileUrl, nombre: nombreArchivo });
-    this.guardarMaterias();
-  } catch (error) {
-    console.error('Error subiendo archivo:', error);
-  }
+      this.guardarMaterias();
+    } catch (error) {
+      console.error('Error subiendo archivo:', error);
+    }
   }
   eliminarArchivo(materia: Materia, archivo: { url: string, nombre: string }) {
-  materia.archivos = materia.archivos?.filter(a => a.url !== archivo.url);
-  this.guardarMaterias();
-}
+    materia.archivos = materia.archivos?.filter(a => a.url !== archivo.url);
+    this.guardarMaterias();
+  }
 
   agregarMateria() {
     const nuevaMateria: Materia = {
@@ -66,6 +66,16 @@ async subirArchivo(materia: Materia) {
         this.guardarMaterias();
       }
     });
+  }
+
+  editarDescripcion(materia: Materia) {
+    materia.editandoDescripcion = true;
+    materia.descripcionTemp = materia.descripcion || '';
+  }
+
+  guardarDescripcion(materia: Materia) {
+    materia.descripcion = materia.descripcionTemp || '';
+    materia.editandoDescripcion = false;
   }
 
   toggleFavorito(materia: Materia) {
@@ -112,6 +122,7 @@ async subirArchivo(materia: Materia) {
     this.guardarMaterias();
   }
 
+
   guardarMaterias() {
     localStorage.setItem('materias', JSON.stringify(this.materias));
   }
@@ -122,5 +133,5 @@ async subirArchivo(materia: Materia) {
       this.materias = JSON.parse(data);
     }
   }
-  
+
 }
