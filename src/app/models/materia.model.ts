@@ -3,6 +3,7 @@ export interface Materia {
   descripcion: string;
   imagen: string;
   titulos: string[];
-  expandida?: boolean;
-  favorito?: boolean;
+  expandida: boolean;
+  favorito: boolean;
+  archivos?: string[]; // URLs de archivos subidos a Filestack
 }

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Materia } from '../models/materia.model';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-
+import { FilestackService } from '../services/filestack.service';
 
 @Component({
   selector: 'app-tab2',
@@ -17,8 +17,23 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 export class Tab2Page {
   materias: Materia[] = [];
 
-  constructor() {
+  constructor(private filestackService: FilestackService) {
     this.cargarMaterias();
+  }
+async subirArchivo(materia: Materia) {
+    try {
+      const result: any = await this.filestackService.openPicker();
+      const fileUrl = result.filesUploaded[0].url;
+
+      if (!materia.archivos) {
+        materia.archivos = [];
+      }
+      materia.archivos.push(fileUrl);
+
+      this.guardarMaterias();
+    } catch (error) {
+      console.error('Error subiendo archivo:', error);
+    }
   }
 
   agregarMateria() {
