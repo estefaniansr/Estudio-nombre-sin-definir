@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Materia } from '../models/materia.model';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-
+import { FilestackService } from '../services/filestack.service';
 
 @Component({
   selector: 'app-tab2',
@@ -17,9 +17,28 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 export class Tab2Page {
   materias: Materia[] = [];
 
-  constructor() {
+  constructor(private filestackService: FilestackService) {
     this.cargarMaterias();
   }
+async subirArchivo(materia: Materia) {
+    try {
+      const result: any = await this.filestackService.openPicker();
+      const fileUrl = result.filesUploaded[0].url;
+ const nombreArchivo = prompt('Ingresa un nombre para el archivo:')?.trim() || 'Archivo sin nombre';
+ 
+      if (!materia.archivos) {
+        materia.archivos = [];
+      }
+      materia.archivos.push({ url: fileUrl, nombre: nombreArchivo });
+    this.guardarMaterias();
+  } catch (error) {
+    console.error('Error subiendo archivo:', error);
+  }
+  }
+  eliminarArchivo(materia: Materia, archivo: { url: string, nombre: string }) {
+  materia.archivos = materia.archivos?.filter(a => a.url !== archivo.url);
+  this.guardarMaterias();
+}
 
   agregarMateria() {
     const nuevaMateria: Materia = {
@@ -103,4 +122,5 @@ export class Tab2Page {
       this.materias = JSON.parse(data);
     }
   }
+  
 }

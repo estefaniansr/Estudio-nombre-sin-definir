@@ -31,6 +31,7 @@ ion-header {
   width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   padding: 16px;
+    
 }
 
 /* === LOGIN CONTAINER === */
@@ -245,4 +246,11 @@ ion-header {
 
 .perfil-container ion-button:hover {
   transform: translateY(-1px);
+}
+/* ====== LOGO CENTRADO ====== */
+.fotologo{
+  width: 50%;
+  height: auto;
+  display: block;  /* necesario para centrar con margin */
+  margin: 0 auto; /* empuja hacia la derecha */
 }

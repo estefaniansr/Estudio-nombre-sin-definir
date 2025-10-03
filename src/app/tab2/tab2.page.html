@@ -61,6 +61,25 @@
             <ion-icon name="add-outline"></ion-icon>
           </ion-button>
         </ion-item>
+         <!-- NUEVO: Botón para subir archivos -->
+        <ion-button expand="full" color="primary" (click)="subirArchivo(materia)">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+          Subir archivo
+        </ion-button>
+
+        <!-- NUEVO: Lista de archivos subidos -->
+        <ion-list *ngIf="materia.archivos?.length">
+          <ion-item *ngFor="let archivo of materia.archivos">
+            <ion-label>
+             <!-- Mostramos el nombre y el link -->
+      <a [href]="archivo.url" target="_blank">{{ archivo.nombre }}</a>
+            </ion-label>
+             <!-- Botón para eliminar el archivo -->
+    <ion-button fill="clear" color="danger" (click)="eliminarArchivo(materia, archivo)">
+      Eliminar
+    </ion-button>
+          </ion-item>
+        </ion-list>
 
         <ion-button expand="full" color="warning" (click)="toggleFavorito(materia)">
           <ion-icon [name]="materia.favorito ? 'heart-dislike-outline' : 'heart-outline'">
