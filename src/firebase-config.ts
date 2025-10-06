@@ -3,6 +3,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCfr7p9pd-9b8qx6xxU8Lvl-92HVvTk2HM",
@@ -14,8 +15,6 @@ const firebaseConfig = {
   measurementId: "G-KEFEZ340JW"
 };
 
-// Inicializar la app de Firebase
-const app = initializeApp(firebaseConfig);
-
-// Obtener la instancia de autenticación
+export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const db = getFirestore(app);

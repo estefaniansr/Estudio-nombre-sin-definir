@@ -16,32 +16,36 @@
 
     <form class="credencial" (ngSubmit)="registrarUsuario()">
 
-      <ion-item>
-        <ion-label position="floating">Nombre completo</ion-label>
-        <ion-input type="text" [(ngModel)]="nombre" name="nombre" required></ion-input>
+      <ion-item class="nombre">
+        <ion-input type="text" [(ngModel)]="nombre" placeholder="Nombre completo" name="nombre" required></ion-input>
       </ion-item>
 
-      <ion-item>
-        <ion-label position="floating">Email</ion-label>
-        <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
+      <ion-item class="email">
+        <ion-input type="email" [(ngModel)]="email" placeholder="Email" name="email" required></ion-input>
       </ion-item>
 
-      <ion-item>
-        <ion-label position="floating">Contraseña</ion-label>
-        <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
+      <ion-item class="password">
+        <ion-input [type]="passwordVisible ? 'text' : 'password'" [(ngModel)]="password" placeholder="Contraseña"
+          name="password" required>
+        </ion-input>
+        <ion-icon slot="end" [name]="passwordVisible ? 'eye-off-outline' : 'eye-outline'" (click)="togglePassword()">
+        </ion-icon>
       </ion-item>
 
-      <ion-item>
-        <ion-label position="floating">Repetir contraseña</ion-label>
-        <ion-input type="password" [(ngModel)]="repPassword" name="repPassword" required></ion-input>
+      <ion-item class="rep">
+        <ion-input [type]="repPasswordVisible ? 'text' : 'password'" [(ngModel)]="repPassword"
+          placeholder="Repetir contraseña" name="repPassword" required>
+        </ion-input>
+        <ion-icon slot="end" [name]="repPasswordVisible ? 'eye-off-outline' : 'eye-outline'"
+          (click)="toggleRepPassword()">
+        </ion-icon>
       </ion-item>
 
-      <ion-item>
-        <ion-label position="floating">Fecha de nacimiento</ion-label>
+      <ion-item class="fecha">
         <ion-input type="date" [(ngModel)]="fecha" name="fecha" required></ion-input>
       </ion-item>
 
-      <ion-button class="btn-registrarse" expand="full" type="submit">
+      <ion-button class="btn-registrarse" expand="clear" type="submit">
         Registrarse
       </ion-button>
     </form>
@@ -59,6 +63,11 @@
           Iniciar sesión
         </ion-button>
       </p>
+    </div>
+
+    <div *ngIf="mensajeVerificacion" class="mensaje-verificacion ion-padding">
+      <p>{{ mensajeVerificacion }}</p>
+      <a [href]="linkGmail" target="_blank">Abrir Gmail</a>
     </div>
   </div>
 </ion-content>
