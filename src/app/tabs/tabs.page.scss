@@ -1,3 +1,5 @@
-.tabHome:hover {
-    color : red;
+ion-tab-button {
+  --color-selected: #8a2be2;
+  --color: #999;
+  --ripple-color: rgba(138, 43, 226, 0.2);
 }

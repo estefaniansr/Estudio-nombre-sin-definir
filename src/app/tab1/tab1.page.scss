@@ -88,6 +88,21 @@ ion-header {
   padding: 5px;
 }
 
+.verPassword {
+  font-size: 20px;
+  position: relative;
+  left: 15px;
+  cursor: pointer;
+}
+
+/* === OLVIDE CONTRASEÑA === */
+
+.olvidePassword {
+  background: transparent;
+  position: relative;
+  right: 25%;
+}
+
 
 /* === BOTÓN LOGIN === */
 
@@ -245,10 +260,29 @@ ion-header {
 .perfil-container ion-button:hover {
   transform: translateY(-1px);
 }
+
+
 /* ====== LOGO CENTRADO ====== */
 .fotologo{
   width: 50%;
   height: auto;
   display: block;  /* necesario para centrar con margin */
   margin: 0 auto; /* empuja hacia la derecha */
+}
+
+
+
+/* ======== AJUSTES ====== */
+
+.ajustes-button {
+  background: transparent;
+
+
+  ion-icon {
+    font-size: 30px;
+  }
+}
+
+.ajustesAbierto {
+  border-radius: 10px;
 }

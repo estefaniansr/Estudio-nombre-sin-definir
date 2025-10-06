@@ -16,7 +16,7 @@
       </div>
       <h1 class="bienvenido">Bienvenido</h1>
     </div>
-<img class="fotologo"src="..\assets\icono.jpg" alt ="logo">
+    <img class="fotologo" src="..\assets\icono.jpg" alt="logo">
 
     <form class="credencial">
       <ion-item class="usuario">
@@ -24,8 +24,17 @@
       </ion-item>
 
       <ion-item class="contraseña">
-        <ion-input type="password" id="password" placeholder="Contraseña" #password required></ion-input>
+        <ion-input [type]="passwordVisible ? 'text' : 'password'" id="password" placeholder="Contraseña" #password
+          required>
+        </ion-input>
+        <ion-icon class="verPassword" slot="end" [name]="passwordVisible ? 'eye-off-outline' : 'eye-outline'"
+          (click)="togglePassword()">
+        </ion-icon>
       </ion-item>
+
+      <button class="olvidePassword" type="button" (click)="olvidePassword(usuario.value?.toString() || '')">
+        Olvidé la contraseña
+      </button>
     </form>
 
     <ion-button class="btn-iniciarSesion" expand="full" fill="clear"
@@ -55,17 +64,40 @@
 
   <!-- VISTA PERFIL -->
   <div *ngIf="user" class="perfil-container ion-padding">
-    <h2>Bienvenido, {{ user.displayName }}</h2>
+    <h2>Bienvenido, {{ user.displayName || 'Usuario' }}</h2>
 
     <ion-avatar>
       <img [src]="user.photoURL" alt="Foto de perfil" />
     </ion-avatar>
 
     <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Nombre:</strong> {{ nombre }}</p>
+    <p><strong>Fecha de nacimiento:</strong> {{ fecha }}</p>
 
-    <ion-button expand="block" color="danger" (click)="logout()">
-      <ion-icon name="exit-outline"></ion-icon>
+    <!-- Botón para desplegar ajustes -->
+    <ion-button class="ajustes-button" (click)="toggleAjustes()" fill="clear">
+      <ion-icon name="cog-outline"></ion-icon>
     </ion-button>
+
+    <!-- Lista de ajustes colapsable -->
+    <ion-list *ngIf="ajustesAbiertos" class="ajustesAbierto">
+      <ion-item button (click)="restablecerPassword()">
+        <ion-icon slot="start" name="key-outline"></ion-icon>
+        <ion-label>Restablecer contraseña</ion-label>
+      </ion-item>
+
+      <ion-item button color="medium" (click)="logout()">
+        <ion-icon slot="start" name="exit-outline"></ion-icon>
+        <ion-label>Cerrar sesión</ion-label>
+      </ion-item>
+
+      <ion-item button color="danger" (click)="eliminarCuenta()">
+        <ion-icon slot="start" name="trash-outline"></ion-icon>
+        <ion-label>Eliminar cuenta</ion-label>
+      </ion-item>
+
+    </ion-list>
+
   </div>
 
 </ion-content>
