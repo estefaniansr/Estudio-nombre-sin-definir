@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -14,10 +14,11 @@ import {
   sendPasswordResetEmail,
   updateEmail,
   updatePassword,
+  updateProfile,
   deleteUser
 } from 'firebase/auth';
 import { db, auth } from '../../firebase-config';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 @Component({
   selector: 'app-tab1',
@@ -26,21 +27,30 @@ import { doc, getDoc } from 'firebase/firestore';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, HttpClientModule],
 })
+
 export class Tab1Page {
   user: User | null = null;
   nombre: string = '';
   fecha: string = '';
   passwordVisible: boolean = false;
   ajustesAbiertos: boolean = false;
+  editarPerfilAbierto: boolean = false;
 
-  constructor(private router: Router) {
-    // 🔹 No se puede usar await directamente en el constructor
+  constructor(private router: Router, private toastCtrl: ToastController) {
     onAuthStateChanged(auth, (u) => {
       this.user = u;
-      if (this.user) {
-        this.cargarDatosUsuario(this.user.uid);
-      }
+      if (this.user) this.cargarDatosUsuario(this.user.uid);
     });
+  }
+
+  async mostrarToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 4000,
+      position: 'top',
+      color: 'primary'
+    });
+    toast.present();
   }
 
   async cargarDatosUsuario(uid: string) {
@@ -64,6 +74,11 @@ export class Tab1Page {
   toggleAjustes() {
     this.ajustesAbiertos = !this.ajustesAbiertos;
   }
+
+  toggleEditarPerfil() {
+    this.editarPerfilAbierto = !this.editarPerfilAbierto;
+  }
+
 
   async iniciarSesion(usuario: string, password: string) {
     if (!usuario || !password) {
@@ -211,6 +226,24 @@ export class Tab1Page {
       this.fecha = '';
     } catch (error) {
       console.error('Error cerrando sesión:', error);
+    }
+  }
+
+  async guardarPerfil() {
+    if (!this.nombre || !this.fecha) {
+      this.mostrarToast('Completa todos los campos');
+      return;
+    }
+    if (!this.user) return;
+
+    try {
+      await setDoc(doc(db, 'usuarios', this.user.uid), { nombre: this.nombre, fecha: this.fecha, email: this.user.email }, { merge: true });
+      await updateProfile(this.user, { displayName: this.nombre });
+      this.mostrarToast('Perfil actualizado con éxito 🎉');
+      this.editarPerfilAbierto = false;
+    } catch (error: any) {
+      console.error(error);
+      this.mostrarToast('No se pudo actualizar el perfil');
     }
   }
 
