@@ -52,6 +52,7 @@
     </div>
   </div>
 
+
   <!-- VISTA PERFIL -->
   <div *ngIf="user" class="perfil-container ion-padding">
     <h2>Bienvenido, {{ user.displayName }}</h2>
@@ -61,7 +62,6 @@
     </ion-avatar>
 
     <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>UID:</strong> {{ user.uid }}</p>
 
     <ion-button expand="block" color="danger" (click)="logout()">
       <ion-icon name="exit-outline"></ion-icon>
