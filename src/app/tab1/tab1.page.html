@@ -20,7 +20,7 @@
 
     <form class="credencial">
       <ion-item class="usuario">
-        <ion-input type="text" id="usuario" placeholder="Usuario" #usuario required></ion-input>
+        <ion-input type="email" id="usuario" placeholder="Email" #usuario required></ion-input>
       </ion-item>
 
       <ion-item class="contraseña">
@@ -64,6 +64,13 @@
 
   <!-- VISTA PERFIL -->
   <div *ngIf="user" class="perfil-container ion-padding">
+    <ion-buttons slot="end">
+      <ion-button (click)="irAjustes()" class="ajustes">
+        <ion-icon slot="icon-only" name="cog-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+
     <h2>Bienvenido, {{ user.displayName || 'Usuario' }}</h2>
 
     <ion-avatar>
@@ -73,51 +80,6 @@
     <p><strong>Email:</strong> {{ user.email }}</p>
     <p><strong>Nombre:</strong> {{ nombre }}</p>
     <p><strong>Fecha de nacimiento:</strong> {{ fecha }}</p>
-
-    <!-- Botón para desplegar ajustes -->
-    <ion-button class="ajustes-button" (click)="toggleAjustes()" fill="clear">
-      <ion-icon name="cog-outline"></ion-icon>
-    </ion-button>
-
-    <!-- Lista de ajustes colapsable -->
-    <ion-list *ngIf="ajustesAbiertos" class="ajustesAbierto">
-      <ion-item button (click)="restablecerPassword()">
-        <ion-icon slot="start" name="key-outline"></ion-icon>
-        <ion-label>Restablecer contraseña</ion-label>
-      </ion-item>
-
-      <ion-item button (click)="toggleEditarPerfil()">
-        <ion-icon slot="start" name="create-outline"></ion-icon>
-        <ion-label>Editar perfil</ion-label>
-      </ion-item>
-
-      <ion-item button color="medium" (click)="logout()">
-        <ion-icon slot="start" name="exit-outline"></ion-icon>
-        <ion-label>Cerrar sesión</ion-label>
-      </ion-item>
-
-      <ion-item button color="danger" (click)="eliminarCuenta()">
-        <ion-icon slot="start" name="trash-outline"></ion-icon>
-        <ion-label>Eliminar cuenta</ion-label>
-      </ion-item>
-
-    </ion-list>
-
-    <!-- Formulario de edición de perfil -->
-    <ion-card *ngIf="editarPerfilAbierto" class="ion-padding">
-      <ion-item>
-        <ion-label position="stacked">Nombre</ion-label>
-        <ion-input [(ngModel)]="nombre" placeholder="Nombre completo"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Fecha de nacimiento</ion-label>
-        <ion-input type="date" [(ngModel)]="fecha"></ion-input>
-      </ion-item>
-
-      <ion-button expand="full" (click)="guardarPerfil()">Guardar cambios</ion-button>
-      <ion-button expand="full" color="medium" fill="outline" (click)="toggleEditarPerfil()">Cancelar</ion-button>
-    </ion-card>
 
   </div>
 

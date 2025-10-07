@@ -1,0 +1,106 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="volverPerfil()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Ajustes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding ajustes-content">
+
+  <!-- Lista de categorías -->
+  <ion-list>
+    <ion-item button (click)="toggleSeccion('seguridad')">
+      <ion-icon slot="start" name="key-outline"></ion-icon>
+      <ion-label>Seguridad y cuenta</ion-label>
+      <ion-icon slot="end" [name]="seccionActiva==='seguridad' ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+    </ion-item>
+
+    <ion-item button (click)="toggleSeccion('notificaciones')">
+      <ion-icon slot="start" name="notifications-outline"></ion-icon>
+      <ion-label>Notificaciones</ion-label>
+      <ion-icon slot="end" [name]="seccionActiva==='notificaciones' ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+    </ion-item>
+
+    <ion-item button (click)="toggleSeccion('privacidad')">
+      <ion-icon slot="start" name="shield-checkmark-outline"></ion-icon>
+      <ion-label>Privacidad</ion-label>
+      <ion-icon slot="end" [name]="seccionActiva==='privacidad' ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <!-- Sección Seguridad -->
+  <ion-card *ngIf="seccionActiva==='seguridad'" class="editar-Perfil">
+    <ion-item button (click)="restablecerPassword()">
+      <ion-icon slot="start" name="key-outline"></ion-icon>
+      <ion-label>Restablecer contraseña</ion-label>
+    </ion-item>
+
+    <ion-item button (click)="toggleEditarPerfil()">
+      <ion-icon slot="start" name="create-outline"></ion-icon>
+      <ion-label>Editar perfil</ion-label>
+    </ion-item>
+
+    <ion-item button color="medium" (click)="logout()">
+      <ion-icon slot="start" name="exit-outline"></ion-icon>
+      <ion-label>Cerrar sesión</ion-label>
+    </ion-item>
+
+    <ion-item button color="danger" (click)="eliminarCuenta()">
+      <ion-icon slot="start" name="trash-outline"></ion-icon>
+      <ion-label>Eliminar cuenta</ion-label>
+    </ion-item>
+
+    <!-- Formulario editar perfil -->
+    <ion-card *ngIf="editarPerfilAbierto" class="editar-Perfil">
+      <ion-item>
+        <ion-label position="stacked">Nombre</ion-label>
+        <ion-input [(ngModel)]="nombre" placeholder="Nombre completo"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Fecha de nacimiento</ion-label>
+        <ion-input type="date" [(ngModel)]="fecha"></ion-input>
+      </ion-item>
+
+      <div class="btn-perfil">
+        <ion-button expand="full" (click)="guardarPerfil()" fill="clear">
+          <ion-icon name="checkmark-outline" id="guardarPerfil-icon"></ion-icon>
+        </ion-button>
+        <ion-button expand="full" color="medium" fill="clear" (click)="toggleEditarPerfil()">
+          <ion-icon name="close-circle-outline" id="eliminarPerfil-icon"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-card>
+  </ion-card>
+
+  <!-- Sección Notificaciones -->
+  <ion-card *ngIf="seccionActiva==='notificaciones'" class="editar-Perfil">
+    <ion-item>
+      <ion-label>Recibir notificaciones push</ion-label>
+      <ion-toggle [(ngModel)]="notificaciones.push"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Recibir emails</ion-label>
+      <ion-toggle [(ngModel)]="notificaciones.email"></ion-toggle>
+    </ion-item>
+  </ion-card>
+
+  <!-- Sección Privacidad -->
+  <ion-card *ngIf="seccionActiva==='privacidad'" class="editar-Perfil">
+    <ion-item>
+      <ion-label>Hacer perfil privado</ion-label>
+      <ion-toggle [(ngModel)]="privacidad.perfilPrivado"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Mostrar actividad</ion-label>
+      <ion-toggle [(ngModel)]="privacidad.mostrarActividad"></ion-toggle>
+    </ion-item>
+  </ion-card>
+
+</ion-content>
