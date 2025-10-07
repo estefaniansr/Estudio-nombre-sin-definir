@@ -10,7 +10,12 @@ const routes: Routes = [
   {
     path: 'registro',
     component: RegistroPage // <-- usá component en vez de loadChildren
+  },
+  {
+    path: 'ajustes',
+    loadComponent: () => import('./ajustes/ajustes.page').then(m => m.AjustesPage)
   }
+
 ];
 
 @NgModule({
@@ -19,4 +24,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

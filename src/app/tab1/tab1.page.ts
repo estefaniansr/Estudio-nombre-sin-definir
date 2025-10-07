@@ -36,12 +36,19 @@ export class Tab1Page {
   ajustesAbiertos: boolean = false;
   editarPerfilAbierto: boolean = false;
 
+
   constructor(private router: Router, private toastCtrl: ToastController) {
     onAuthStateChanged(auth, (u) => {
       this.user = u;
       if (this.user) this.cargarDatosUsuario(this.user.uid);
     });
   }
+
+  // Método para ir a Ajustes
+  irAjustes() {
+    this.router.navigate(['/ajustes']);
+  }
+
 
   async mostrarToast(message: string) {
     const toast = await this.toastCtrl.create({
@@ -174,61 +181,6 @@ export class Tab1Page {
     }
   }
 
-  async cambiarContrasena() {
-    const nuevaPass = prompt('Ingresa tu nueva contraseña:');
-    if (!nuevaPass || !this.user) return;
-
-    try {
-      await updatePassword(this.user, nuevaPass);
-      alert('Contraseña cambiada con éxito 🎉');
-    } catch (error: any) {
-      console.error('Error cambiando contraseña:', error);
-      alert(error.message || 'No se pudo cambiar la contraseña');
-    }
-  }
-
-  async cambiarCorreo() {
-    const nuevoEmail = prompt('Ingresa tu nuevo correo:');
-    if (!nuevoEmail || !this.user) return;
-
-    try {
-      await updateEmail(this.user, nuevoEmail);
-      alert('Correo actualizado con éxito 🎉\nVerificá tu nuevo correo');
-    } catch (error: any) {
-      console.error('Error cambiando correo:', error);
-      alert(error.message || 'No se pudo cambiar el correo');
-    }
-  }
-
-  async eliminarCuenta() {
-    if (!this.user) return;
-    const confirmacion = confirm(
-      '¿Estás seguro que querés eliminar tu cuenta? Esta acción no se puede deshacer.'
-    );
-    if (!confirmacion) return;
-
-    try {
-      await deleteUser(this.user);
-      alert('Cuenta eliminada correctamente');
-      this.user = null;
-      this.router.navigate(['/tabs/tab1']);
-    } catch (error: any) {
-      console.error('Error eliminando cuenta:', error);
-      alert(error.message || 'No se pudo eliminar la cuenta');
-    }
-  }
-
-  async logout() {
-    try {
-      await auth.signOut();
-      this.user = null;
-      this.nombre = '';
-      this.fecha = '';
-    } catch (error) {
-      console.error('Error cerrando sesión:', error);
-    }
-  }
-
   async guardarPerfil() {
     if (!this.nombre || !this.fecha) {
       this.mostrarToast('Completa todos los campos');
@@ -239,7 +191,7 @@ export class Tab1Page {
     try {
       await setDoc(doc(db, 'usuarios', this.user.uid), { nombre: this.nombre, fecha: this.fecha, email: this.user.email }, { merge: true });
       await updateProfile(this.user, { displayName: this.nombre });
-      this.mostrarToast('Perfil actualizado con éxito 🎉');
+      this.mostrarToast('Perfil actualizado');
       this.editarPerfilAbierto = false;
     } catch (error: any) {
       console.error(error);

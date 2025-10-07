@@ -31,7 +31,7 @@ ion-header {
   width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   padding: 16px;
-    
+
 }
 
 /* === LOGIN CONTAINER === */
@@ -133,12 +133,15 @@ ion-header {
 
 .contenedor-redes {
   display: flex;
-  gap: 10px; /* espacio entre los botones */
-  justify-content: center; /* opcional, para centrar */
+  gap: 10px;
+  /* espacio entre los botones */
+  justify-content: center;
+  /* opcional, para centrar */
   align-items: center;
 }
 
-.google, .gh {
+.google,
+.gh {
   margin-top: 1px;
   color: #4d0199;
   cursor: pointer;
@@ -147,7 +150,8 @@ ion-header {
   display: inline-block;
   position: relative;
   left: 35%;
-  top: -10px; /* si querés mantener el ajuste vertical */
+  top: -10px;
+  /* si querés mantener el ajuste vertical */
 }
 
 
@@ -186,11 +190,11 @@ ion-header {
 .btn-registrarse:hover {
   color: #8000ff;
   text-decoration: none;
-} 
+}
 
 
 
-/* === VISTA USER ====== */ 
+/* === VISTA USER ====== */
 .perfil-container {
   width: 100%;
   max-width: 380px;
@@ -263,26 +267,21 @@ ion-header {
 
 
 /* ====== LOGO CENTRADO ====== */
-.fotologo{
+.fotologo {
   width: 50%;
   height: auto;
-  display: block;  /* necesario para centrar con margin */
-  margin: 0 auto; /* empuja hacia la derecha */
+  display: block;
+  /* necesario para centrar con margin */
+  margin: 0 auto;
+  /* empuja hacia la derecha */
 }
 
 
 
 /* ======== AJUSTES ====== */
 
-.ajustes-button {
-  background: transparent;
-
-
-  ion-icon {
-    font-size: 30px;
-  }
-}
-
-.ajustesAbierto {
-  border-radius: 10px;
+.ajustes {
+  position: relative;
+  left: 150px;
+  top: -20px;
 }
