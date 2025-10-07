@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -28,34 +28,25 @@ export class AjustesPage {
   nombre: string = '';
   fecha: string = '';
 
-  // Sección activa principal
   seccionActiva: 'seguridad' | 'notificaciones' | 'privacidad' | null = null;
-
-  // Subsección editar perfil
   editarPerfilAbierto: boolean = false;
 
-  // Datos de notificaciones y privacidad
-  notificaciones = {
-    push: true,
-    email: false
-  };
+  notificaciones = { push: true, email: false };
+  privacidad = { perfilPrivado: false, mostrarActividad: true };
 
-  privacidad = {
-    perfilPrivado: false,
-    mostrarActividad: true
-  };
-
-  constructor(private router: Router, private toastCtrl: ToastController) {
+  constructor(
+    private router: Router,
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController
+  ) {
     onAuthStateChanged(auth, (u) => {
       this.user = u;
       if (this.user) this.cargarDatosUsuario(this.user.uid);
     });
   }
 
-  // Toggle de sección principal
   toggleSeccion(seccion: 'seguridad' | 'notificaciones' | 'privacidad') {
     this.seccionActiva = this.seccionActiva === seccion ? null : seccion;
-    // Al cambiar de sección, cerramos el formulario de editar perfil
     if (seccion !== 'seguridad') this.editarPerfilAbierto = false;
   }
 
@@ -71,6 +62,29 @@ export class AjustesPage {
       color: 'primary'
     });
     toast.present();
+  }
+
+  async mostrarAlert(header: string, message: string) {
+    const alert = await this.alertCtrl.create({
+      header,
+      message,
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
+
+  async mostrarPrompt(header: string, placeholder: string): Promise<string | null> {
+    return new Promise(async (resolve) => {
+      const alert = await this.alertCtrl.create({
+        header,
+        inputs: [{ name: 'input', type: 'text', placeholder }],
+        buttons: [
+          { text: 'Cancelar', role: 'cancel', handler: () => resolve(null) },
+          { text: 'Aceptar', handler: (data) => resolve(data.input) }
+        ]
+      });
+      await alert.present();
+    });
   }
 
   async cargarDatosUsuario(uid: string) {
@@ -112,18 +126,19 @@ export class AjustesPage {
     }
   }
 
-  restablecerPassword() {
+  async restablecerPassword() {
     if (!this.user?.email) {
-      alert('No se encontró tu correo registrado');
+      await this.mostrarAlert('Error', 'No se encontró tu correo registrado');
       return;
     }
 
-    sendPasswordResetEmail(auth, this.user.email)
-      .then(() => alert('Se ha enviado un correo de restablecimiento'))
-      .catch(err => {
-        console.error(err);
-        alert(err.message || 'No se pudo enviar el correo');
-      });
+    try {
+      await sendPasswordResetEmail(auth, this.user.email);
+      await this.mostrarAlert('Correo enviado', 'Se ha enviado un correo de restablecimiento. Revisá tu bandeja de entrada (y spam).');
+    } catch (error: any) {
+      console.error(error);
+      await this.mostrarAlert('Error', error.message || 'No se pudo enviar el correo');
+    }
   }
 
   async logout() {
@@ -141,45 +156,54 @@ export class AjustesPage {
 
   async eliminarCuenta() {
     if (!this.user) return;
-    const confirmacion = confirm(
-      '¿Estás seguro que querés eliminar tu cuenta? Esta acción no se puede deshacer.'
-    );
-    if (!confirmacion) return;
 
-    try {
-      await deleteUser(this.user);
-      alert('Cuenta eliminada correctamente');
-      this.user = null;
-      this.router.navigate(['/tabs/tab1']);
-    } catch (error: any) {
-      console.error('Error eliminando cuenta:', error);
-      alert(error.message || 'No se pudo eliminar la cuenta');
-    }
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro que querés eliminar tu cuenta? Esta acción no se puede deshacer.',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          handler: async () => {
+            try {
+              await deleteUser(this.user!);
+              await this.mostrarAlert('Cuenta eliminada', 'Tu cuenta fue eliminada correctamente.');
+              this.user = null;
+              this.router.navigate(['/tabs/tab1']);
+            } catch (error: any) {
+              console.error('Error eliminando cuenta:', error);
+              await this.mostrarAlert('Error', error.message || 'No se pudo eliminar la cuenta');
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   async cambiarContrasena() {
-    const nuevaPass = prompt('Ingresa tu nueva contraseña:');
+    const nuevaPass = await this.mostrarPrompt('Cambiar contraseña', 'Ingresa tu nueva contraseña');
     if (!nuevaPass || !this.user) return;
 
     try {
       await updatePassword(this.user, nuevaPass);
-      alert('Contraseña cambiada');
+      await this.mostrarAlert('Éxito', 'Contraseña cambiada correctamente');
     } catch (error: any) {
       console.error(error);
-      alert(error.message || 'No se pudo cambiar la contraseña');
+      await this.mostrarAlert('Error', error.message || 'No se pudo cambiar la contraseña');
     }
   }
 
   async cambiarCorreo() {
-    const nuevoEmail = prompt('Ingresa tu nuevo correo:');
+    const nuevoEmail = await this.mostrarPrompt('Cambiar correo', 'Ingresa tu nuevo correo');
     if (!nuevoEmail || !this.user) return;
 
     try {
       await updateEmail(this.user, nuevoEmail);
-      alert('Correo actualizado\nVerificá tu nuevo correo');
+      await this.mostrarAlert('Éxito', 'Correo actualizado. Verificá tu nuevo correo.');
     } catch (error: any) {
       console.error(error);
-      alert(error.message || 'No se pudo cambiar el correo');
+      await this.mostrarAlert('Error', error.message || 'No se pudo cambiar el correo');
     }
   }
 }

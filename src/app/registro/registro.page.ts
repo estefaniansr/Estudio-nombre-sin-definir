@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -13,8 +13,6 @@ import {
 import { auth, db } from '../../firebase-config';
 import { doc, setDoc } from 'firebase/firestore';
 
-
-
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.page.html',
@@ -22,7 +20,6 @@ import { doc, setDoc } from 'firebase/firestore';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule],
 })
-
 export class RegistroPage {
   email: string = '';
   password: string = '';
@@ -30,11 +27,10 @@ export class RegistroPage {
   nombre: string = '';
   fecha: string = '';
 
-
   passwordVisible: boolean = false;
   repPasswordVisible: boolean = false;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private alertCtrl: AlertController) {}
 
   togglePassword() {
     this.passwordVisible = !this.passwordVisible;
@@ -44,18 +40,23 @@ export class RegistroPage {
     this.repPasswordVisible = !this.repPasswordVisible;
   }
 
-
-  mensajeVerificacion: string = '';
-  linkGmail: string = '';
+  async mostrarAlert(header: string, message: string) {
+    const alert = await this.alertCtrl.create({
+      header,
+      message,
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
 
   async registrarUsuario() {
     if (!this.email || !this.password || !this.repPassword || !this.nombre || !this.fecha) {
-      this.mensajeVerificacion = 'Completa todos los campos';
+      await this.mostrarAlert('Error', 'Completa todos los campos');
       return;
     }
 
     if (this.password !== this.repPassword) {
-      this.mensajeVerificacion = 'Las contraseñas no coinciden';
+      await this.mostrarAlert('Error', 'Las contraseñas no coinciden');
       return;
     }
 
@@ -73,13 +74,14 @@ export class RegistroPage {
       await sendEmailVerification(user);
       await signOut(auth);
 
-      // 🔹 Mostrar mensaje en la app con link
-      this.mensajeVerificacion = 'Registro exitoso. Te enviamos un correo de verificación. Revisá tu bandeja de entrada (o spam).';
-      this.linkGmail = 'https://mail.google.com/mail/u/0/#inbox/';
+      await this.mostrarAlert(
+        'Registro exitoso',
+        'Te enviamos un correo de verificación. Revisá tu bandeja de entrada (o spam).'
+      );
 
     } catch (error: any) {
       console.error(error);
-      this.mensajeVerificacion = error.message || 'Error al registrarse';
+      await this.mostrarAlert('Error', error.message || 'Error al registrarse');
     }
   }
 
