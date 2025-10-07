@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicModule, IonInput } from '@ionic/angular';
+import { IonicModule, IonInput, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Materia } from '../models/materia.model';
@@ -13,28 +13,43 @@ import { FilestackService } from '../services/filestack.service';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule]
 })
-
 export class Tab2Page {
   materias: Materia[] = [];
 
-  constructor(private filestackService: FilestackService) {
+  constructor(private filestackService: FilestackService, private alertCtrl: AlertController) {
     this.cargarMaterias();
   }
+
+  async mostrarPrompt(header: string, value: string = ''): Promise<string | null> {
+    return new Promise(async (resolve) => {
+      const alert = await this.alertCtrl.create({
+        header,
+        inputs: [{ name: 'input', type: 'text', value }],
+        buttons: [
+          { text: 'Cancelar', role: 'cancel', handler: () => resolve(null) },
+          { text: 'Aceptar', handler: (data) => resolve(data.input) }
+        ]
+      });
+      await alert.present();
+    });
+  }
+
   async subirArchivo(materia: Materia) {
     try {
       const result: any = await this.filestackService.openPicker();
       const fileUrl = result.filesUploaded[0].url;
-      const nombreArchivo = prompt('Ingresa un nombre para el archivo:')?.trim() || 'Archivo sin nombre';
 
-      if (!materia.archivos) {
-        materia.archivos = [];
-      }
-      materia.archivos.push({ url: fileUrl, nombre: nombreArchivo });
+      const nombreArchivo = await this.mostrarPrompt('Nombre del archivo', 'Archivo sin nombre');
+      if (nombreArchivo === null) return;
+
+      if (!materia.archivos) materia.archivos = [];
+      materia.archivos.push({ url: fileUrl, nombre: nombreArchivo.trim() || 'Archivo sin nombre' });
       this.guardarMaterias();
     } catch (error) {
       console.error('Error subiendo archivo:', error);
     }
   }
+
   eliminarArchivo(materia: Materia, archivo: { url: string, nombre: string }) {
     materia.archivos = materia.archivos?.filter(a => a.url !== archivo.url);
     this.guardarMaterias();
@@ -76,6 +91,7 @@ export class Tab2Page {
   guardarDescripcion(materia: Materia) {
     materia.descripcion = materia.descripcionTemp || '';
     materia.editandoDescripcion = false;
+    this.guardarMaterias();
   }
 
   toggleFavorito(materia: Materia) {
@@ -88,11 +104,12 @@ export class Tab2Page {
     this.guardarMaterias();
   }
 
-  editarMateria(materia: Materia) {
-    const nuevoNombre = prompt('Editar nombre de la materia:', materia.nombre);
+  async editarMateria(materia: Materia) {
+    // Igual que la descripción, abrimos un prompt nativo de Ionic
+    const nuevoNombre = await this.mostrarPrompt('Editar nombre de la materia', materia.nombre);
     if (nuevoNombre !== null && nuevoNombre.trim() !== '') {
       materia.nombre = nuevoNombre.trim();
-      localStorage.setItem('materias', JSON.stringify(this.materias));
+      this.guardarMaterias();
     }
   }
 
@@ -106,8 +123,8 @@ export class Tab2Page {
       const image = await Camera.getPhoto({
         quality: 90,
         allowEditing: false,
-        resultType: CameraResultType.DataUrl, // Devuelve base64
-        source: CameraSource.Photos // Galería del dispositivo
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Photos
       });
 
       materia.imagen = image.dataUrl!;
@@ -122,16 +139,12 @@ export class Tab2Page {
     this.guardarMaterias();
   }
 
-
   guardarMaterias() {
     localStorage.setItem('materias', JSON.stringify(this.materias));
   }
 
   cargarMaterias() {
     const data = localStorage.getItem('materias');
-    if (data) {
-      this.materias = JSON.parse(data);
-    }
+    if (data) this.materias = JSON.parse(data);
   }
-
 }

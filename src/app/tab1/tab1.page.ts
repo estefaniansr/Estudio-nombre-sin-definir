@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -12,10 +12,7 @@ import {
   onAuthStateChanged,
   GithubAuthProvider,
   sendPasswordResetEmail,
-  updateEmail,
-  updatePassword,
-  updateProfile,
-  deleteUser
+  updateProfile
 } from 'firebase/auth';
 import { db, auth } from '../../firebase-config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -27,7 +24,6 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, HttpClientModule],
 })
-
 export class Tab1Page {
   user: User | null = null;
   nombre: string = '';
@@ -36,8 +32,11 @@ export class Tab1Page {
   ajustesAbiertos: boolean = false;
   editarPerfilAbierto: boolean = false;
 
-
-  constructor(private router: Router, private toastCtrl: ToastController) {
+  constructor(
+    private router: Router,
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController
+  ) {
     onAuthStateChanged(auth, (u) => {
       this.user = u;
       if (this.user) this.cargarDatosUsuario(this.user.uid);
@@ -49,7 +48,6 @@ export class Tab1Page {
     this.router.navigate(['/ajustes']);
   }
 
-
   async mostrarToast(message: string) {
     const toast = await this.toastCtrl.create({
       message,
@@ -58,6 +56,15 @@ export class Tab1Page {
       color: 'primary'
     });
     toast.present();
+  }
+
+  async mostrarAlert(header: string, message: string) {
+    const alert = await this.alertCtrl.create({
+      header,
+      message,
+      buttons: ['OK'],
+    });
+    await alert.present();
   }
 
   async cargarDatosUsuario(uid: string) {
@@ -86,10 +93,9 @@ export class Tab1Page {
     this.editarPerfilAbierto = !this.editarPerfilAbierto;
   }
 
-
   async iniciarSesion(usuario: string, password: string) {
     if (!usuario || !password) {
-      alert('Completa todos los campos');
+      await this.mostrarAlert('Error', 'Completa todos los campos');
       return;
     }
 
@@ -98,8 +104,9 @@ export class Tab1Page {
       const user = result.user;
 
       if (!user.emailVerified) {
-        alert(
-          'Tu correo no está verificado.\n\nRevisa tu bandeja de entrada y hacé clic en el enlace de verificación antes de iniciar sesión.'
+        await this.mostrarAlert(
+          'Correo no verificado',
+          'Tu correo no está verificado. Revisa tu bandeja de entrada y haz clic en el enlace de verificación antes de iniciar sesión.'
         );
         await auth.signOut();
         return;
@@ -107,50 +114,63 @@ export class Tab1Page {
 
       this.user = user;
       await this.cargarDatosUsuario(user.uid);
-
-      console.log('Login exitoso:', this.user);
       this.router.navigate(['/tabs/tab2']);
     } catch (error: any) {
       console.error('Error login:', error);
-      alert(error.message || 'Error al iniciar sesión');
+
+      // Manejo de errores específico
+      let mensaje = 'Error al iniciar sesión';
+      switch (error.code) {
+        case 'auth/invalid-credential':
+        case 'auth/wrong-password':
+        case 'auth/user-not-found':
+          mensaje = 'Correo o contraseña incorrectos';
+          break;
+        case 'auth/too-many-requests':
+          mensaje = 'Se han realizado demasiados intentos. Esperá un momento e intentá de nuevo.';
+          break;
+        default:
+          mensaje = error.message || 'Error al iniciar sesión';
+      }
+
+      await this.mostrarAlert('Error', mensaje);
     }
   }
 
   async olvidePassword(usuario: string) {
     if (!usuario) {
-      alert('Ingresá tu correo para restablecer la contraseña');
+      await this.mostrarAlert('Error', 'Ingresá tu correo para restablecer la contraseña');
       return;
     }
 
     try {
       await sendPasswordResetEmail(auth, usuario);
-      alert(
+      await this.mostrarAlert(
+        'Correo enviado',
         'Te enviamos un correo para restablecer tu contraseña. Revisá tu bandeja de entrada (y spam).'
       );
     } catch (error: any) {
       console.error('Error restableciendo contraseña:', error);
-      alert(error.message || 'No se pudo enviar el correo de restablecimiento');
+      await this.mostrarAlert('Error', error.message || 'No se pudo enviar el correo de restablecimiento');
     }
   }
 
-
-
-  restablecerPassword() {
+  async restablecerPassword() {
     if (!this.user?.email) {
-      alert('No se encontró tu correo registrado');
+      await this.mostrarAlert('Error', 'No se encontró tu correo registrado');
       return;
     }
 
-    sendPasswordResetEmail(auth, this.user.email)
-      .then(() => {
-        alert(
-          'Se ha enviado un correo de restablecimiento. Revisá tu bandeja de entrada (y spam).'
-        );
-      })
-      .catch((error) => {
-        console.error('Error restableciendo contraseña:', error);
-        alert(error.message || 'No se pudo enviar el correo de restablecimiento');
-      });
+    try {
+      await sendPasswordResetEmail(auth, this.user.email);
+      await this.mostrarAlert(
+        'Correo enviado',
+        'Se ha enviado un correo de restablecimiento. Revisá tu bandeja de entrada (y spam).'
+      );
+    } catch (error: any) {
+      console.error('Error restableciendo contraseña:', error);
+      await this.mostrarAlert('Error', error.message || 'No se pudo enviar el correo de restablecimiento');
+    }
   }
 
   async loginConGoogle() {
@@ -163,7 +183,7 @@ export class Tab1Page {
       this.router.navigate(['/tabs/tab2']);
     } catch (error) {
       console.error('Error al iniciar sesión con Google:', error);
-      alert('No se pudo iniciar sesión con Google');
+      await this.mostrarAlert('Error', 'No se pudo iniciar sesión con Google');
     }
   }
 
@@ -177,7 +197,7 @@ export class Tab1Page {
       this.router.navigate(['/tabs/tab2']);
     } catch (error: any) {
       console.error('Error al iniciar sesión con GitHub:', error);
-      alert(error.message || 'No se pudo iniciar sesión con GitHub');
+      await this.mostrarAlert('Error', error.message || 'No se pudo iniciar sesión con GitHub');
     }
   }
 
