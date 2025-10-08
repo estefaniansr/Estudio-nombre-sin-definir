@@ -11,6 +11,7 @@ import { collection, addDoc, getFirestore, getDocs, query, where, deleteDoc, doc
 import { db } from '../../firebase-config';
 import * as JSZip from 'jszip';
 import * as FileSaver from 'file-saver';
+import { SpinnerService } from '../services/spinner.service';
 
 
 @Component({
@@ -23,8 +24,9 @@ import * as FileSaver from 'file-saver';
 export class Tab2Page {
   materias: Materia[] = [];
   user: any = null;
+  
 
-  constructor(private filestackService: FilestackService, private alertCtrl: AlertController) {
+  constructor(private filestackService: FilestackService, private alertCtrl: AlertController, private spinner: SpinnerService) {
     const auth = getAuth();
     auth.onAuthStateChanged(user => {
       if (user) {
@@ -34,7 +36,9 @@ export class Tab2Page {
         console.warn('No hay usuario logueado aún.');
       }
     });
+
   }
+
 
   async mostrarPrompt(header: string, value: string = ''): Promise<string | null> {
     return new Promise(async (resolve) => {
@@ -96,8 +100,6 @@ export class Tab2Page {
     }
   }
 
-
-
   async subirArchivo(materia: Materia) {
 
     const permisoOtorgado = await this.pedirPermisoAlmacenamiento();
@@ -131,30 +133,44 @@ export class Tab2Page {
   }
 
   async eliminarArchivo(materia: Materia, archivo: { url: string, nombre: string }) {
-    if (!this.user) return;
-    materia.archivos = materia.archivos?.filter(a => a.url !== archivo.url);
 
-    // Actualizar en Firestore
-    const docRef = doc(db, 'usuarios', this.user.uid, 'materias', materia.nombre);
-    await setDoc(docRef, materia);
+    await this.spinner.run(async () => {
+      if (!this.user) return;
+      materia.archivos = materia.archivos?.filter(a => a.url !== archivo.url);
 
-    console.log('Archivo eliminado en Firestore');
+      // Actualizar en Firestore
+      const docRef = doc(db, 'usuarios', this.user.uid, 'materias', materia.nombre);
+      await setDoc(docRef, materia);
+
+      console.log('Archivo eliminado en Firestore');
+    }, 'Eliminando archivo...');
   }
 
+  async agregarMateria() {
 
+    const materia = collection(db, "usuarios", this.user.uid, "materias");
 
-  agregarMateria() {
-    const nuevaMateria: Materia = {
+    const nuevaMateria = {
       id: doc(collection(db, 'usuarios', this.user.uid, 'materias')).id,
       nombre: 'Nueva Materia',
       descripcion: '',
       imagen: 'assets/default.png',
       titulos: [],
       expandida: false,
-      favorito: false
+      favorito: false,
+      publica: false,
+      
     };
+    await this.spinner.run(async () => {
+      try {
+        await addDoc(materia, nuevaMateria);
+
+      } catch (err) {
+        alert(err)
+      }
+    }, 'Creando materia');
     this.materias.push(nuevaMateria);
-    this.guardarMaterias();
+    //this.guardarMaterias();
   }
 
   toggleExpandir(materia: Materia) {
@@ -186,7 +202,7 @@ export class Tab2Page {
   toggleFavorito(materia: Materia) {
     materia.favorito = !materia.favorito;
     this.guardarMaterias();
-  }  // agregarlo a la bd
+  }
 
   eliminarTitulo(materia: Materia, index: number) {
     materia.titulos.splice(index, 1);
@@ -223,27 +239,25 @@ export class Tab2Page {
   }
 
   async eliminarMateria(materia: Materia) {
-    if (!this.user) return;
+  if (!this.user) return;
 
-    if (!materia.id) {
-      console.error('No se puede eliminar la materia: no tiene ID');
-      return;
-    }
-
-    try {
-      // Borrar documento usando el ID
-      await deleteDoc(doc(db, 'usuarios', this.user.uid, 'materias', materia.id));
-
-      // Borrar del arreglo local para actualizar la UI
-      this.materias = this.materias.filter(m => m.id !== materia.id);
-
-      console.log('Materia eliminada correctamente');
-    } catch (error) {
-      console.error('Error eliminando materia:', error);
-    }
+  if (!materia.id) {
+    console.error('No se puede eliminar la materia: no tiene ID');
+    return;
   }
 
+  try {
+    // Borrar documento usando el ID en Firestore
+    await deleteDoc(doc(db, 'usuarios', this.user.uid, 'materias', materia.id));
 
+    // Actualizar el arreglo local para reflejar la UI
+    this.materias = this.materias.filter(m => m.id !== materia.id);
+
+    console.log(`Materia "${materia.nombre}" eliminada correctamente`);
+  } catch (error) {
+    console.error('Error eliminando materia:', error);
+  }
+}
 
   async cambiarFotoMateria(materia: Materia) {
     try {
@@ -279,6 +293,8 @@ export class Tab2Page {
 
     const zip = new JSZip();
     const folder = zip.folder(materia.nombre);
+
+
 
     try {
       for (const archivo of materia.archivos) {
@@ -316,12 +332,23 @@ export class Tab2Page {
 
     try {
       const materiasRef = collection(db, 'usuarios', user.uid, 'materias');
+
       for (const materia of this.materias) {
         if (!materia.id) {
-          // Generar un ID si no tiene
           materia.id = doc(materiasRef).id;
         }
-        await setDoc(doc(materiasRef, materia.id), materia);
+
+        if (typeof materia.publica === 'string') {
+          materia.publica = materia.publica === 'true';
+        }
+
+
+        await setDoc(doc(materiasRef, materia.id), {
+          ...materia,
+          publica: materia.publica
+        }, { merge: true });
+
+        console.log(`Guardando materia: ${materia.nombre} → pública: ${materia.publica}`);
       }
       console.log('Materias guardadas en Firestore para el usuario', user.uid);
     } catch (error) {
@@ -329,17 +356,36 @@ export class Tab2Page {
     }
   }
 
+  initPublicaStr() {
+    this.materias.forEach(m => m.publicaStr = m.publica ? 'true' : 'false');
+  }
+
+  async onCambioPublica(materia: any, event: any) {
+    // Convertimos string a boolean
+    materia.publica = event.detail.value === 'true';
+    materia.publicaStr = event.detail.value;
+
+    try {
+      await this.guardarMaterias();
+      console.log(`Materia ${materia.nombre} actualizada → pública: ${materia.publica}`);
+    } catch (error) {
+      console.error('Error guardando cambio de estado público:', error);
+    }
+  }
+
   async cargarMaterias() {
     const user = getAuth().currentUser;
     if (!user) return;
 
-    try {
-      const materiasRef = collection(db, 'usuarios', user.uid, 'materias');
-      const snapshot = await getDocs(materiasRef);
-      this.materias = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Materia));
-    } catch (error) {
-      console.error('Error al cargar materias:', error);
-    }
+    await this.spinner.run(async () => {
+      try {
+        const materiasRef = collection(db, 'usuarios', user.uid, 'materias');
+        const snapshot = await getDocs(materiasRef);
+        this.materias = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Materia));
+      } catch (error) {
+        console.error('Error al cargar materias:', error);
+      }
+    }, 'Cargando materias...');
   }
 
 }

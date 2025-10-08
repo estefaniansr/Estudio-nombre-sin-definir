@@ -5,12 +5,15 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="grid-container">
+  
+  <div class="materias-container">
     <div *ngFor="let materia of materias" class="materia-card">
+
       <ion-card>
-        <ion-img [src]="materia.imagen"></ion-img>
+        <ion-img class="materia-img" [src]="materia.imagen"></ion-img>
         <ion-card-header>
           <ion-card-title>{{ materia.nombre }}</ion-card-title>
+          <small>Creado por: {{ materia.ownerEmail }}</small>
         </ion-card-header>
         <ion-card-content>
           <p>{{ materia.descripcion }}</p>
@@ -20,11 +23,15 @@
             </ion-item>
           </ion-list>
         </ion-card-content>
+        <ion-button fill="clear" (click)="descargarMateria(materia)" class="down">
+          <ion-icon name="download-outline" class="icon-down"></ion-icon>
+        </ion-button>
       </ion-card>
     </div>
-  </div>
 
-  <div *ngIf="materias.length === 0" class="ion-text-center ion-padding">
-    <p>No hay materias disponibles aún.</p>
+    <div *ngIf="materias.length === 0" class="ion-text-center ion-padding">
+      <p>No hay materias disponibles aún.</p>
+    </div>
+
   </div>
 </ion-content>

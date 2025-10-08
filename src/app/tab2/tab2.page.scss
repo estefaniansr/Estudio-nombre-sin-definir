@@ -52,8 +52,7 @@ ion-header {
 .favYdown {
   display: flex;
   align-items: center;
-  gap: 10rem;
-  /* separa los botones un poquito */
+  justify-content: space-between;
 }
 
 .favYdown .fav,
@@ -214,8 +213,70 @@ ion-item {
 
 /* ==== favoritos ======== */
 
-.fav {
-  background: #0b1215;
-  border-radius: 10px;
-  width: 50px;
+.custom-segment {
+  --background: #101518; /* fondo del contenedor */
+  --border-radius: 12px;
+  --indicator-background: #8000ff; /* fondo del botón activo */
+  --indicator-border-radius: 12px;
+  --color-checked: #fff; /* texto activo */
+  --color: #8000ff; /* texto inactivo */
+  margin: 1rem auto;
+  display: flex;
+}
+
+.custom-segment ion-segment-button {
+  flex: 1;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/*===== Publica o privada ========*/
+
+.PubPriv {
+  --indicator-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px; /* controla la distancia entre los íconos */
+  border: 1px solid #8000ff;
+  border-radius: 25px;
+  overflow: hidden;
+  width: 90px; /* más compacto */
+  height: 34px;
+  margin: 8px auto;
+  background: #101518;
+  backdrop-filter: blur(2px);
+  position: relative;
+  top: 50px;
+  left: -5px;
+}
+
+.PubPriv ion-segment-button {
+  --color: #8000ff;
+  --background: transparent;
+  --background-checked: #8000ff;
+  --color-checked: #fff;
+  border-radius: 25px;
+  transition: all 0.1s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  min-width: 40px; /* más angosto cada botón */
+}
+
+.PubPriv ion-icon {
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+}
+
+.PubPriv ion-segment-button[aria-checked="true"] { 
+  background: #8000ff;
+  color: #fff;
+}
+
+.PubPriv ion-segment-button[aria-checked="false"] { 
+  background: transparent;
+  color: #8000ff;
 }

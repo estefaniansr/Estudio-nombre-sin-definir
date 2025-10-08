@@ -98,6 +98,18 @@
           </ion-item>
         </ion-list>
 
+        <!--Publica o privada-->
+        <ion-segment [(ngModel)]="materia.publicaStr" (ionChange)="onCambioPublica(materia, $event)" class="PubPriv">
+          <ion-segment-button [value]="'false'">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+          </ion-segment-button>
+
+          <ion-segment-button [value]="'true'">
+            <ion-icon name="lock-open-outline"></ion-icon>
+          </ion-segment-button>
+        </ion-segment>
+
+
         <div class="favYdown">
           <ion-button expand="full" fill="clear" color="warning" (click)="toggleFavorito(materia)" class="fav">
             <ion-icon [name]="materia.favorito ? 'heart-dislike-outline' : 'heart-outline'">
@@ -107,6 +119,7 @@
           <ion-button fill="clear" (click)="descargarMateria(materia)" class="down">
             <ion-icon name="download-outline" class="icon-down"></ion-icon>
           </ion-button>
+
         </div>
 
       </ion-card-content>

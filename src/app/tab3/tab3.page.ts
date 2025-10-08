@@ -5,6 +5,8 @@ import { Materia } from '../models/materia.model';
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase-config';
+import { SpinnerService } from '../services/spinner.service';
+
 
 @Component({
   selector: 'app-tab3',
@@ -17,7 +19,7 @@ export class Tab3Page {
   favoritos: Materia[] = [];
   user: any = null;
 
-  constructor() {
+  constructor(private spinner: SpinnerService) {
     const auth = getAuth();
     auth.onAuthStateChanged(user => {
       if (user) {
@@ -30,20 +32,22 @@ export class Tab3Page {
   async cargarFavoritos() {
     if (!this.user) return;
 
-    try {
-      const materiasRef = collection(db, 'usuarios', this.user.uid, 'materias');
-      const q = query(materiasRef, where('favorito', '==', true));
-      const snapshot = await getDocs(q);
-      this.favoritos = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Materia));
-      console.log('Favoritos cargados', this.favoritos);
-    } catch (error) {
-      console.error('Error cargando favoritos:', error);
-    }
+    await this.spinner.run(async () => {
+      try {
+        const materiasRef = collection(db, 'usuarios', this.user.uid, 'materias');
+        const q = query(materiasRef, where('favorito', '==', true));
+        const snapshot = await getDocs(q);
+        this.favoritos = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Materia));
+        console.log('Favoritos cargados', this.favoritos);
+      } catch (error) {
+        console.error('Error cargando favoritos:', error);
+      }
+    }, 'Cargando materias favoritas...');
   }
 
   abrirArchivo(url: string) {
-  window.open(url, '_blank');
-}
+    window.open(url, '_blank');
+  }
 
 }
 
