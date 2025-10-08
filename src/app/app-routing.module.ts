@@ -14,7 +14,12 @@ const routes: Routes = [
   {
     path: 'ajustes',
     loadComponent: () => import('./ajustes/ajustes.page').then(m => m.AjustesPage)
+  },
+  {
+    path: 'comunidad',
+    loadComponent: () => import('./comunidad/comunidad.page').then(m => m.ComunidadPage)
   }
+
 
 ];
 

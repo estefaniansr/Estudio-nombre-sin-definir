@@ -1,8 +1,11 @@
 export interface Archivo {
   url: string;
   nombre: string;
+  subidoPor?: string;  // email
+  fechaSubida?: Date;
 }
 export interface Materia {
+  id?: string;
   nombre: string;
   descripcion: string;
   imagen: string;

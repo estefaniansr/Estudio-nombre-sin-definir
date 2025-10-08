@@ -24,7 +24,14 @@ const routes: Routes = [
         path: '',
         redirectTo: '/tabs/tab1',
         pathMatch: 'full'
+      },
+      {
+        path: 'comunidad',
+        loadComponent: () => import('../comunidad/comunidad.page').then(m => m.ComunidadPage)
       }
+
+
+
     ]
   },
   {

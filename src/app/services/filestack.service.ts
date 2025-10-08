@@ -8,14 +8,13 @@ export class FilestackService {
   private client: any;
 
   constructor() {
-    // Reemplaza con tu API KEY de Filestack
     this.client = filestack.init('ARiMNESXtThyfmSJpoKgmz');
   }
 
   async uploadFile(file: File) {
     try {
       const result = await this.client.upload(file);
-      return result; // Te devuelve la URL y metadatos del archivo
+      return result;
     } catch (error) {
       console.error('Error subiendo archivo:', error);
       throw error;
