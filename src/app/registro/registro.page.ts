@@ -93,6 +93,8 @@ export class RegistroPage {
       console.error(error);
       await this.mostrarAlert('Error', error.message || 'Error al registrarse');
     }
+
+    this.router.navigate(['/tabs/tab1']);
   }
 
   irLogin() {
