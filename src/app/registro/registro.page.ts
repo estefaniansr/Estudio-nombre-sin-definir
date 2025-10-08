@@ -12,6 +12,7 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '../../firebase-config';
 import { doc, setDoc } from 'firebase/firestore';
+import { SpinnerService } from '../services/spinner.service';
 
 @Component({
   selector: 'app-registro',
@@ -30,7 +31,7 @@ export class RegistroPage {
   passwordVisible: boolean = false;
   repPasswordVisible: boolean = false;
 
-  constructor(private router: Router, private alertCtrl: AlertController) { }
+  constructor(private router: Router, private alertCtrl: AlertController, private spinner: SpinnerService) { }
 
   togglePassword() {
     this.passwordVisible = !this.passwordVisible;
@@ -70,31 +71,35 @@ export class RegistroPage {
       return;
     }
 
-    try {
-      const result = await createUserWithEmailAndPassword(auth, this.email, this.password);
-      const user: User = result.user;
 
-      await setDoc(doc(db, 'usuarios', user.uid), {
-        nombre: this.nombre,
-        fecha: this.fecha,
-        email: this.email
-      });
+    await this.spinner.run(async () => {
+      try {
+        const result = await createUserWithEmailAndPassword(auth, this.email, this.password);
+        const user: User = result.user;
 
-      await updateProfile(user, { displayName: this.nombre });
-      await sendEmailVerification(user);
-      await signOut(auth);
+        await setDoc(doc(db, 'usuarios', user.uid), {
+          nombre: this.nombre,
+          fecha: this.fecha,
+          email: this.email
+        });
 
-      await this.mostrarAlert(
-        'Registro exitoso',
-        'Te enviamos un correo de verificación. Revisá tu bandeja de entrada (o spam).'
-      );
+        await updateProfile(user, { displayName: this.nombre });
+        await sendEmailVerification(user);
+        await signOut(auth);
 
-    } catch (error: any) {
-      console.error(error);
-      await this.mostrarAlert('Error', error.message || 'Error al registrarse');
-    }
+        await this.mostrarAlert(
+          'Registro exitoso',
+          'Te enviamos un correo de verificación. Revisá tu bandeja de entrada (o spam).'
+        );
 
-    this.router.navigate(['/tabs/tab1']);
+      } catch (error: any) {
+        console.error(error);
+        await this.mostrarAlert('Error', error.message || 'Error al registrarse');
+      }
+
+      this.router.navigate(['/tabs/tab1']);
+
+    }, 'Registrando usuario...');
   }
 
   irLogin() {

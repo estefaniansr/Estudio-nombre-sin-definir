@@ -12,7 +12,8 @@ import {
   onAuthStateChanged
 } from 'firebase/auth';
 import { db, auth } from '../../firebase-config';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { SpinnerService } from '../services/spinner.service';
 
 @Component({
   selector: 'app-ajustes',
@@ -29,13 +30,13 @@ export class AjustesPage {
   seccionActiva: 'seguridad' | 'idioma' | 'tema' | 'soporte' | null = null;
   editarPerfilAbierto: boolean = false;
 
-  // Tema
   modoOscuro = false;
 
   constructor(
     private router: Router,
     private toastCtrl: ToastController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private spinner: SpinnerService
   ) {
     onAuthStateChanged(auth, (u) => {
       this.user = u;
@@ -72,17 +73,19 @@ export class AjustesPage {
   }
 
   async cargarDatosUsuario(uid: string) {
-    try {
-      const docRef = doc(db, 'usuarios', uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data() as any;
-        this.nombre = data.nombre;
-        this.fecha = data.fecha;
+    await this.spinner.run(async () => {
+      try {
+        const docRef = doc(db, 'usuarios', uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data() as any;
+          this.nombre = data.nombre;
+          this.fecha = data.fecha;
+        }
+      } catch (error) {
+        console.error('Error cargando datos del usuario:', error);
       }
-    } catch (error) {
-      console.error('Error cargando datos del usuario:', error);
-    }
+    }, 'Cargando datos del usuario...');
   }
 
   volverPerfil() {
@@ -95,19 +98,25 @@ export class AjustesPage {
       return;
     }
 
-    try {
-      await setDoc(doc(db, 'usuarios', this.user.uid), {
-        nombre: this.nombre,
-        fecha: this.fecha,
-        email: this.user.email
-      }, { merge: true });
-      await updateProfile(this.user, { displayName: this.nombre });
-      this.mostrarToast('Perfil actualizado');
-      this.editarPerfilAbierto = false;
-    } catch (error: any) {
-      console.error(error);
-      this.mostrarToast('No se pudo actualizar el perfil');
-    }
+    const user = this.user; // ✅ aseguramos que no es null
+
+    await this.spinner.run(async () => {
+      try {
+        await setDoc(doc(db, 'usuarios', user.uid), {
+          nombre: this.nombre,
+          fecha: this.fecha,
+          email: user.email ?? ''
+        }, { merge: true });
+
+        await updateProfile(user, { displayName: this.nombre });
+
+        this.mostrarToast('Perfil actualizado');
+        this.editarPerfilAbierto = false;
+      } catch (error: any) {
+        console.error(error);
+        this.mostrarToast('No se pudo actualizar el perfil');
+      }
+    }, 'Guardando cambios...');
   }
 
   async restablecerPassword() {
@@ -116,36 +125,43 @@ export class AjustesPage {
       return;
     }
 
-    try {
-      await sendPasswordResetEmail(auth, this.user.email);
-      await this.mostrarAlert('Correo enviado', 'Se ha enviado un correo de restablecimiento. Revisá tu bandeja de entrada (y spam).');
-    } catch (error: any) {
-      console.error(error);
-      await this.mostrarAlert('Error', error.message || 'No se pudo enviar el correo');
-    }
+    const email = this.user.email; // ✅ ya validado arriba
+
+    await this.spinner.run(async () => {
+      try {
+        await sendPasswordResetEmail(auth, email);
+        await this.mostrarAlert(
+          'Correo enviado',
+          'Se ha enviado un correo de restablecimiento. Revisá tu bandeja de entrada (y spam).'
+        );
+      } catch (error: any) {
+        console.error(error);
+        await this.mostrarAlert('Error', error.message || 'No se pudo enviar el correo');
+      }
+    }, 'Enviando correo de restablecimiento...');
   }
 
   async logout() {
-
-    try {
-      await auth.signOut();
-      this.user = null;
-      this.nombre = '';
-      this.fecha = '';
-      this.seccionActiva = null;
-      this.editarPerfilAbierto = false;
-
-    } catch (error) {
-      console.error('Error cerrando sesión:', error);
-    }
-
-
-    await this.mostrarAlert('Sesion cerrada', '');
-    this.router.navigate(['/tabs/tab1']);
+    await this.spinner.run(async () => {
+      try {
+        await auth.signOut();
+        this.user = null;
+        this.nombre = '';
+        this.fecha = '';
+        this.seccionActiva = null;
+        this.editarPerfilAbierto = false;
+        await this.mostrarAlert('Sesión cerrada', '');
+        this.router.navigate(['/tabs/tab1']);
+      } catch (error) {
+        console.error('Error cerrando sesión:', error);
+      }
+    }, 'Cerrando sesión...');
   }
 
   async eliminarCuenta() {
     if (!this.user) return;
+
+    const user = this.user; // ✅ guardamos referencia no nula
 
     const alert = await this.alertCtrl.create({
       header: 'Confirmar eliminación',
@@ -155,15 +171,20 @@ export class AjustesPage {
         {
           text: 'Eliminar',
           handler: async () => {
-            try {
-              await deleteUser(this.user!);
-              await this.mostrarAlert('Cuenta eliminada', 'Tu cuenta fue eliminada correctamente.');
-              this.user = null;
-              this.router.navigate(['/tabs/tab1']);
-            } catch (error: any) {
-              console.error('Error eliminando cuenta:', error);
-              await this.mostrarAlert('Error', error.message || 'No se pudo eliminar la cuenta');
-            }
+            await this.spinner.run(async () => {
+              try {
+                await deleteUser(user);
+
+                await deleteDoc(doc(db, 'usuarios', user.uid))
+
+                await this.mostrarAlert('Cuenta eliminada', 'Tu cuenta fue eliminada correctamente.');
+                this.user = null;
+                this.router.navigate(['/tabs/tab1']);
+              } catch (error: any) {
+                console.error('Error eliminando cuenta:', error);
+                await this.mostrarAlert('Error', error.message || 'No se pudo eliminar la cuenta');
+              }
+            }, 'Eliminando cuenta...');
           }
         }
       ]
@@ -171,11 +192,13 @@ export class AjustesPage {
     await alert.present();
   }
 
-
   contactarSoporte() {
     const email = 'desarollomoviltp@gmail.com';
     const subject = encodeURIComponent('Soporte App');
     const body = encodeURIComponent('Hola, necesito ayuda con la app...');
-    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`, '_blank');
+    window.open(
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`,
+      '_blank'
+    );
   }
 }
