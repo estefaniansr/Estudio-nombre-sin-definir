@@ -7,8 +7,6 @@ import { HttpClientModule } from '@angular/common/http';
 import {
   User,
   sendPasswordResetEmail,
-  updateEmail,
-  updatePassword,
   updateProfile,
   deleteUser,
   onAuthStateChanged
@@ -28,11 +26,11 @@ export class AjustesPage {
   nombre: string = '';
   fecha: string = '';
 
-  seccionActiva: 'seguridad' | 'notificaciones' | 'privacidad' | null = null;
+  seccionActiva: 'seguridad' | 'idioma' | 'tema' | 'soporte' | null = null;
   editarPerfilAbierto: boolean = false;
 
-  notificaciones = { push: true, email: false };
-  privacidad = { perfilPrivado: false, mostrarActividad: true };
+  // Tema
+  modoOscuro = false;
 
   constructor(
     private router: Router,
@@ -45,7 +43,7 @@ export class AjustesPage {
     });
   }
 
-  toggleSeccion(seccion: 'seguridad' | 'notificaciones' | 'privacidad') {
+  toggleSeccion(seccion: 'seguridad' | 'idioma' | 'tema' | 'soporte') {
     this.seccionActiva = this.seccionActiva === seccion ? null : seccion;
     if (seccion !== 'seguridad') this.editarPerfilAbierto = false;
   }
@@ -71,20 +69,6 @@ export class AjustesPage {
       buttons: ['OK'],
     });
     await alert.present();
-  }
-
-  async mostrarPrompt(header: string, placeholder: string): Promise<string | null> {
-    return new Promise(async (resolve) => {
-      const alert = await this.alertCtrl.create({
-        header,
-        inputs: [{ name: 'input', type: 'text', placeholder }],
-        buttons: [
-          { text: 'Cancelar', role: 'cancel', handler: () => resolve(null) },
-          { text: 'Aceptar', handler: (data) => resolve(data.input) }
-        ]
-      });
-      await alert.present();
-    });
   }
 
   async cargarDatosUsuario(uid: string) {
@@ -142,6 +126,7 @@ export class AjustesPage {
   }
 
   async logout() {
+
     try {
       await auth.signOut();
       this.user = null;
@@ -149,9 +134,14 @@ export class AjustesPage {
       this.fecha = '';
       this.seccionActiva = null;
       this.editarPerfilAbierto = false;
+
     } catch (error) {
       console.error('Error cerrando sesión:', error);
     }
+
+
+    await this.mostrarAlert('Sesion cerrada', '');
+    this.router.navigate(['/tabs/tab1']);
   }
 
   async eliminarCuenta() {
@@ -181,29 +171,11 @@ export class AjustesPage {
     await alert.present();
   }
 
-  async cambiarContrasena() {
-    const nuevaPass = await this.mostrarPrompt('Cambiar contraseña', 'Ingresa tu nueva contraseña');
-    if (!nuevaPass || !this.user) return;
 
-    try {
-      await updatePassword(this.user, nuevaPass);
-      await this.mostrarAlert('Éxito', 'Contraseña cambiada correctamente');
-    } catch (error: any) {
-      console.error(error);
-      await this.mostrarAlert('Error', error.message || 'No se pudo cambiar la contraseña');
-    }
-  }
-
-  async cambiarCorreo() {
-    const nuevoEmail = await this.mostrarPrompt('Cambiar correo', 'Ingresa tu nuevo correo');
-    if (!nuevoEmail || !this.user) return;
-
-    try {
-      await updateEmail(this.user, nuevoEmail);
-      await this.mostrarAlert('Éxito', 'Correo actualizado. Verificá tu nuevo correo.');
-    } catch (error: any) {
-      console.error(error);
-      await this.mostrarAlert('Error', error.message || 'No se pudo cambiar el correo');
-    }
+  contactarSoporte() {
+    const email = 'desarollomoviltp@gmail.com';
+    const subject = encodeURIComponent('Soporte App');
+    const body = encodeURIComponent('Hola, necesito ayuda con la app...');
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`, '_blank');
   }
 }

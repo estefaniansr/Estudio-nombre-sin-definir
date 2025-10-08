@@ -30,7 +30,7 @@ export class RegistroPage {
   passwordVisible: boolean = false;
   repPasswordVisible: boolean = false;
 
-  constructor(private router: Router, private alertCtrl: AlertController) {}
+  constructor(private router: Router, private alertCtrl: AlertController) { }
 
   togglePassword() {
     this.passwordVisible = !this.passwordVisible;
@@ -57,6 +57,16 @@ export class RegistroPage {
 
     if (this.password !== this.repPassword) {
       await this.mostrarAlert('Error', 'Las contraseñas no coinciden');
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+
+    if (!passwordRegex.test(this.password)) {
+      await this.mostrarAlert(
+        'Contraseña insegura',
+        'La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula y una minúscula.'
+      );
       return;
     }
 

@@ -31,6 +31,8 @@ export class Tab1Page {
   passwordVisible: boolean = false;
   ajustesAbiertos: boolean = false;
   editarPerfilAbierto: boolean = false;
+  intentosFallidos: number = 0;
+  bloqueadoHasta: number | null = null;
 
   constructor(
     private router: Router,
@@ -75,6 +77,11 @@ export class Tab1Page {
         const data = docSnap.data() as any;
         this.nombre = data.nombre;
         this.fecha = data.fecha;
+
+        try {
+          const fechanueva = this.fecha.split("-");
+          this.fecha = fechanueva[2] + "/" + fechanueva[1] + "/" + fechanueva[0];
+        } catch (error) {}
       }
     } catch (error) {
       console.error('Error cargando datos del usuario:', error);
@@ -94,6 +101,7 @@ export class Tab1Page {
   }
 
   async iniciarSesion(usuario: string, password: string) {
+
     if (!usuario || !password) {
       await this.mostrarAlert('Error', 'Completa todos los campos');
       return;
@@ -111,6 +119,9 @@ export class Tab1Page {
         await auth.signOut();
         return;
       }
+
+      this.intentosFallidos = 0;
+      this.bloqueadoHasta = null;
 
       this.user = user;
       await this.cargarDatosUsuario(user.uid);

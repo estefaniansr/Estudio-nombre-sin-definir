@@ -1,23 +1,40 @@
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Favoritos</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Favoritos</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <ion-content class="ion-padding">
-    <div class="materias-container" *ngFor="let materia of favoritos">
-      <ion-card>
-        <ion-img [src]="materia.imagen"></ion-img>
-        <ion-card-header>
-          <ion-card-title>{{ materia.nombre }}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <p>{{ materia.descripcion }}</p>
-          <ion-list>
-            <ion-item *ngFor="let titulo of materia.titulos">{{ titulo }}</ion-item>
-          </ion-list>
+<ion-content class="ion-padding">
+  <div class="materias-container" *ngFor="let materia of favoritos">
+    <ion-card>
+      <ion-img [src]="materia.imagen"></ion-img>
+      <ion-card-header>
+        <ion-card-title>{{ materia.nombre }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>{{ materia.descripcion }}</p>
 
-        </ion-card-content>
-      </ion-card>
-    </div>
-  </ion-content>
+        <!-- Titulos -->
+        <ion-list>
+          <ion-item *ngFor="let titulo of materia.titulos">{{ titulo }}</ion-item>
+        </ion-list>
+
+        <!-- Archivos -->
+        <ion-list *ngIf="materia.archivos?.length">
+          <ion-list-header>
+          </ion-list-header>
+          <ion-item *ngFor="let archivo of materia.archivos" class="archivos-item">
+            <ion-label>
+              <h3>{{ archivo.nombre }}</h3>
+              <p>{{ archivo.fechaSubida | date:'short' }}</p>
+            </ion-label>
+            <ion-button fill="clear" size="small" (click)="abrirArchivo(archivo.url)">
+              <ion-icon name="open-outline" class="icon-open"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-list>
+
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
