@@ -24,6 +24,7 @@ import { SpinnerService } from '../services/spinner.service';
 export class Tab2Page {
   materias: Materia[] = [];
   user: any = null;
+  
 
   constructor(private filestackService: FilestackService, private alertCtrl: AlertController, private spinner: SpinnerService) {
     const auth = getAuth();
@@ -238,26 +239,25 @@ export class Tab2Page {
   }
 
   async eliminarMateria(materia: Materia) {
-    if (!this.user) return;
+  if (!this.user) return;
 
-    if (!materia.id) {
-      console.error('No se puede eliminar la materia: no tiene ID');
-      return;
-    }
-
-    try {
-      // Borrar documento usando el ID
-      await deleteDoc(doc(db, 'usuarios', this.user.uid, 'materias', materia.id));
-
-      // Borrar del arreglo local para actualizar la UI
-      this.materias = this.materias.filter(m => m.id !== materia.id);
-
-      console.log('Materia eliminada correctamente');
-    } catch (error) {
-      console.error('Error eliminando materia:', error);
-    }
-
+  if (!materia.id) {
+    console.error('No se puede eliminar la materia: no tiene ID');
+    return;
   }
+
+  try {
+    // Borrar documento usando el ID en Firestore
+    await deleteDoc(doc(db, 'usuarios', this.user.uid, 'materias', materia.id));
+
+    // Actualizar el arreglo local para reflejar la UI
+    this.materias = this.materias.filter(m => m.id !== materia.id);
+
+    console.log(`Materia "${materia.nombre}" eliminada correctamente`);
+  } catch (error) {
+    console.error('Error eliminando materia:', error);
+  }
+}
 
   async cambiarFotoMateria(materia: Materia) {
     try {
