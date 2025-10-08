@@ -35,6 +35,39 @@ ion-header {
   font-size: 28px;
 }
 
+/* ====== btn de descargar ====== */
+
+.icon-down {
+  color: #8000ff;
+
+  font-size: 20px;
+}
+
+.down {
+  background: #0b1215;
+  border-radius: 10px;
+  width: 50px;
+}
+
+.favYdown {
+  display: flex;
+  align-items: center;
+  gap: 10rem;
+  /* separa los botones un poquito */
+}
+
+.favYdown .fav,
+.favYdown .btn-down {
+  --min-width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.icon-down {
+  color: #8000ff;
+  /* ya lo tenías, queda consistente */
+}
+
 
 /* ===== Contenedor de materias ===== */
 .materias-container {

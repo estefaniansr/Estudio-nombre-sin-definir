@@ -35,6 +35,7 @@
               <ion-icon [name]="materia.expandida ? 'chevron-up-outline' : 'chevron-down-outline'">
               </ion-icon>
             </ion-button>
+
           </div>
           <ion-button fill="clear" size="small" (click)="editarMateria(materia)" class="editar">
             <ion-icon name="pencil-outline"></ion-icon>
@@ -44,6 +45,7 @@
           <ion-button fill="clear" size="small" color="danger" (click)="eliminarMateria(materia)" class="eliminar">
             <ion-icon name="trash-bin-outline"></ion-icon>
           </ion-button>
+
         </div>
       </ion-card-header>
 
@@ -63,7 +65,7 @@
             {{ materia.descripcion || '' }}
           </div>
           <ion-button fill="clear" size="small" (click)="editarDescripcion(materia)" class="editar-desc">
-                <ion-icon name="create-outline"></ion-icon>
+            <ion-icon name="create-outline"></ion-icon>
           </ion-button>
         </ng-template>
 
@@ -73,6 +75,7 @@
             <ion-button slot="end" color="danger" fill="clear" size="small" (click)="eliminarTitulo(materia, i)">
               <ion-icon name="trash-bin-outline"></ion-icon>
             </ion-button>
+
           </ion-item>
         </ion-list>
 
@@ -95,10 +98,17 @@
           </ion-item>
         </ion-list>
 
-        <ion-button expand="full" fill="clear" color="warning" (click)="toggleFavorito(materia)" class="fav">
-          <ion-icon [name]="materia.favorito ? 'heart-dislike-outline' : 'heart-outline'">
-          </ion-icon>
-        </ion-button>
+        <div class="favYdown">
+          <ion-button expand="full" fill="clear" color="warning" (click)="toggleFavorito(materia)" class="fav">
+            <ion-icon [name]="materia.favorito ? 'heart-dislike-outline' : 'heart-outline'">
+            </ion-icon>
+          </ion-button>
+
+          <ion-button fill="clear" (click)="descargarMateria(materia)" class="down">
+            <ion-icon name="download-outline" class="icon-down"></ion-icon>
+          </ion-button>
+        </div>
+
       </ion-card-content>
     </ion-card>
   </div>

@@ -9,6 +9,9 @@ import { FilestackService } from '../services/filestack.service';
 import { getAuth } from 'firebase/auth';
 import { collection, addDoc, getFirestore, getDocs, query, where, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
+import * as JSZip from 'jszip';
+import * as FileSaver from 'file-saver';
+
 
 @Component({
   selector: 'app-tab2',
@@ -68,6 +71,32 @@ export class Tab2Page {
     }
   }
 
+  getFileExtension(url: string): string {
+    try {
+      // 1. Intentar obtener la extensión del nombre real del archivo si la URL lo contiene
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname; // ejemplo: /files/abc123/documento.pdf
+      const parts = pathname.split('.');
+      if (parts.length > 1) {
+        return parts.pop()!.toLowerCase();
+      }
+
+      // 2. Si no tiene extensión, intentar deducirla por tipo MIME
+      const mimeTypes: Record<string, string> = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'application/pdf': 'pdf',
+        'text/plain': 'txt',
+        'application/zip': 'zip',
+      };
+
+      return 'bin'; // valor por defecto si no se puede detectar
+    } catch {
+      return 'bin';
+    }
+  }
+
+
 
   async subirArchivo(materia: Materia) {
 
@@ -94,7 +123,7 @@ export class Tab2Page {
 
       if (!materia.archivos) materia.archivos = [];
 
-      materia.archivos.push({ url: fileUrl, nombre: nombreArchivo.trim() || 'Archivo sin nombre', subidoPor: user.uid, fechaSubida: new Date() })
+      materia.archivos.push({ url: fileUrl, nombre: nombreArchivo.trim() || 'Archivo sin nombre', extension: this.getFileExtension(fileUrl), subidoPor: user.uid, fechaSubida: new Date() })
       this.guardarMaterias();
     } catch (error) {
       console.error('Error subiendo archivo:', error);
@@ -236,6 +265,47 @@ export class Tab2Page {
     materia.imagen = 'assets/default.png';
     this.guardarMaterias();
   } // corregir
+
+  async descargarMateria(materia: Materia) {
+    if (!materia.archivos || materia.archivos.length === 0) {
+      const alert = await this.alertCtrl.create({
+        header: 'Sin archivos',
+        message: 'Esta materia no tiene archivos para descargar.',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
+    const zip = new JSZip();
+    const folder = zip.folder(materia.nombre);
+
+    try {
+      for (const archivo of materia.archivos) {
+        const response = await fetch(archivo.url);
+        const blob = await response.blob();
+
+        // Aseguramos que tenga extensión válida
+        const extension = archivo.extension || this.getFileExtension(archivo.url);
+        const nombreConExtension = archivo.nombre.endsWith(`.${extension}`)
+          ? archivo.nombre
+          : `${archivo.nombre}.${extension}`;
+
+        folder?.file(nombreConExtension, blob);
+      }
+
+      const content = await zip.generateAsync({ type: 'blob' });
+      FileSaver.saveAs(content, `${materia.nombre}.zip`);
+    } catch (error) {
+      console.error('Error descargando materia:', error);
+      const alert = await this.alertCtrl.create({
+        header: 'Error',
+        message: 'No se pudo descargar la materia.',
+        buttons: ['OK']
+      });
+      await alert.present();
+    }
+  }
 
   async guardarMaterias() {
     const user = getAuth().currentUser;

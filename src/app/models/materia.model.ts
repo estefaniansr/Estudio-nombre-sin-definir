@@ -1,6 +1,7 @@
 export interface Archivo {
   url: string;
   nombre: string;
+  extension?: string;
   subidoPor?: string;  // email
   fechaSubida?: Date;
 }
