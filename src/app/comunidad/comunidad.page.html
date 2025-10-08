@@ -5,20 +5,26 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div *ngFor="let materia of materias" class="materia-card">
-    <ion-card>
-      <ion-img [src]="materia.imagen"></ion-img>
-      <ion-card-header>
-        <ion-card-title>{{ materia.nombre }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p>{{ materia.descripcion }}</p>
-        <ion-list *ngIf="materia.archivos?.length">
-          <ion-item *ngFor="let archivo of materia.archivos">
-            <a [href]="archivo.url" target="_blank">{{ archivo.nombre }}</a>
-          </ion-item>
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
+  <div class="grid-container">
+    <div *ngFor="let materia of materias" class="materia-card">
+      <ion-card>
+        <ion-img [src]="materia.imagen"></ion-img>
+        <ion-card-header>
+          <ion-card-title>{{ materia.nombre }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>{{ materia.descripcion }}</p>
+          <ion-list *ngIf="materia.archivos?.length">
+            <ion-item *ngFor="let archivo of materia.archivos">
+              <a [href]="archivo.url" target="_blank">{{ archivo.nombre }}</a>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <div *ngIf="materias.length === 0" class="ion-text-center ion-padding">
+    <p>No hay materias disponibles aún.</p>
   </div>
 </ion-content>
