@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule, ActionSheetController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Materia } from '../models/materia.model';
@@ -10,7 +10,6 @@ import { SpinnerService } from '../services/spinner.service';
 import * as JSZip from 'jszip';
 import * as FileSaver from 'file-saver';
 
-
 @Component({
   selector: 'app-comunidad',
   templateUrl: './comunidad.page.html',
@@ -18,11 +17,14 @@ import * as FileSaver from 'file-saver';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule]
 })
+
 export class ComunidadPage implements OnInit {
   materias: Materia[] = [];
   currentUserEmail: string | null = null;
+  creadores: string[] = [];
+  materiasOriginal: Materia[] = [];
 
-  constructor(private spinner: SpinnerService, private alertCtrl: AlertController) { }
+  constructor(private spinner: SpinnerService, private alertCtrl: AlertController, private actionSheetCtrl: ActionSheetController) { }
 
   async ngOnInit() {
     // Esperar al usuario actual
@@ -51,7 +53,7 @@ export class ComunidadPage implements OnInit {
         return materiasSnapshot.docs
           .map(m => {
             const data = m.data() as Materia;
-            return { id: m.id, ...data, publica: !!data.publica,  ownerEmail: userDoc.data()['email'] }; // fuerza booleano
+            return { id: m.id, ...data, publica: !!data.publica, ownerEmail: userDoc.data()['email'] }; // fuerza booleano
           })
           .filter(materia => materia.publica); // solo públicas
       });
@@ -61,10 +63,72 @@ export class ComunidadPage implements OnInit {
 
       console.log('Materias de todos los usuarios cargadas:', this.materias);
 
+      this.materiasOriginal = [...this.materias];
+
+      this.creadores = Array.from(
+        new Set(
+          this.materias
+            .map(m => m.ownerEmail)
+            .filter((email): email is string => !!email)
+        )
+      );
+
+
     } catch (error) {
       console.error('Error cargando materias de la comunidad:', error);
     }
   }
+  async abrirFiltro() {
+    const buttons: any[] = [
+      {
+        text: 'Por nombre ( A - Z )',
+        handler: () => {
+          this.materias.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+          this.materias = [...this.materias];
+        },
+      },
+      {
+        text: 'Filtrar por creador',
+        handler: async () => {
+          // Abrimos un alert con radios (ya lo tenías funcionando)
+          const alert = await this.alertCtrl.create({
+            header: 'Seleccionar creador',
+            inputs: this.creadores.map(c => ({
+              label: c,
+              type: 'radio',
+              value: c,
+            })),
+            buttons: [
+              { text: 'Cancelar', role: 'cancel' },
+              {
+                text: 'Aceptar',
+                handler: (creadorSeleccionado: string) => {
+                  if (creadorSeleccionado) {
+                    this.materias = this.materiasOriginal.filter(m => m.ownerEmail === creadorSeleccionado);
+                  }
+                }
+              }
+            ]
+          });
+          await alert.present();
+        }
+      },
+      {
+        text: 'Mostrar todas',
+        role: 'cancel',
+        handler: () => {
+          this.materias = [...this.materiasOriginal];
+        }
+      }
+    ];
+
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Filtrar materias',
+      buttons
+    });
+    await actionSheet.present();
+  }
+
 
   esPropia(materia: Materia): boolean {
     if (!materia.archivos) return false;
@@ -138,6 +202,6 @@ export class ComunidadPage implements OnInit {
       await alert.present();
     }
   }
-  
+
 
 }

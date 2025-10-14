@@ -1,11 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Comunidad</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="abrirFiltro()">
+        <ion-icon name="filter-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  
+
   <div class="materias-container">
     <div *ngFor="let materia of materias" class="materia-card">
 
