@@ -24,7 +24,7 @@ import { SpinnerService } from '../services/spinner.service';
 export class Tab2Page {
   materias: Materia[] = [];
   user: any = null;
-  
+
 
   constructor(private filestackService: FilestackService, private alertCtrl: AlertController, private spinner: SpinnerService) {
     const auth = getAuth();
@@ -147,11 +147,13 @@ export class Tab2Page {
   }
 
   async agregarMateria() {
+    if (!this.user) return;
 
-    const materia = collection(db, "usuarios", this.user.uid, "materias");
+    const materiasRef = collection(db, "usuarios", this.user.uid, "materias");
+    const nuevaRef = doc(materiasRef); // genera ID único
 
     const nuevaMateria = {
-      id: doc(collection(db, 'usuarios', this.user.uid, 'materias')).id,
+      id: nuevaRef.id, // mismo ID local y Firestore
       nombre: 'Nueva Materia',
       descripcion: '',
       imagen: 'assets/default.png',
@@ -159,18 +161,18 @@ export class Tab2Page {
       expandida: false,
       favorito: false,
       publica: false,
-      
+      archivos: []
     };
+
     await this.spinner.run(async () => {
       try {
-        await addDoc(materia, nuevaMateria);
-
+        await setDoc(nuevaRef, nuevaMateria); // crea el documento con ID correcto
       } catch (err) {
-        alert(err)
+        console.error('Error al crear materia:', err);
       }
     }, 'Creando materia');
+
     this.materias.push(nuevaMateria);
-    //this.guardarMaterias();
   }
 
   toggleExpandir(materia: Materia) {
@@ -239,25 +241,25 @@ export class Tab2Page {
   }
 
   async eliminarMateria(materia: Materia) {
-  if (!this.user) return;
+    if (!this.user) return;
 
-  if (!materia.id) {
-    console.error('No se puede eliminar la materia: no tiene ID');
-    return;
+    if (!materia.id) {
+      console.error('No se puede eliminar la materia: no tiene ID');
+      return;
+    }
+
+    try {
+      console.log('Intentando eliminar materia con ID:', materia.id);
+      await deleteDoc(doc(db, 'usuarios', this.user.uid, 'materias', materia.id));
+
+      // Actualizar el arreglo local para reflejar la UI
+      this.materias = this.materias.filter(m => m.id !== materia.id);
+
+      console.log(`Materia "${materia.nombre}" eliminada correctamente`);
+    } catch (error) {
+      console.error('Error eliminando materia:', error);
+    }
   }
-
-  try {
-    // Borrar documento usando el ID en Firestore
-    await deleteDoc(doc(db, 'usuarios', this.user.uid, 'materias', materia.id));
-
-    // Actualizar el arreglo local para reflejar la UI
-    this.materias = this.materias.filter(m => m.id !== materia.id);
-
-    console.log(`Materia "${materia.nombre}" eliminada correctamente`);
-  } catch (error) {
-    console.error('Error eliminando materia:', error);
-  }
-}
 
   async cambiarFotoMateria(materia: Materia) {
     try {
@@ -325,36 +327,19 @@ export class Tab2Page {
 
   async guardarMaterias() {
     const user = getAuth().currentUser;
-    if (!user) {
-      console.error('Usuario no autenticado');
-      return;
+    if (!user) return;
+
+    const materiasRef = collection(db, 'usuarios', user.uid, 'materias');
+
+    for (const materia of this.materias) {
+      if (!materia.id) continue; // ignorar materias sin id
+      const docRef = doc(materiasRef, materia.id);
+      await setDoc(docRef, { ...materia, publica: materia.publica }, { merge: true });
     }
 
-    try {
-      const materiasRef = collection(db, 'usuarios', user.uid, 'materias');
-
-      for (const materia of this.materias) {
-        if (!materia.id) {
-          materia.id = doc(materiasRef).id;
-        }
-
-        if (typeof materia.publica === 'string') {
-          materia.publica = materia.publica === 'true';
-        }
-
-
-        await setDoc(doc(materiasRef, materia.id), {
-          ...materia,
-          publica: materia.publica
-        }, { merge: true });
-
-        console.log(`Guardando materia: ${materia.nombre} → pública: ${materia.publica}`);
-      }
-      console.log('Materias guardadas en Firestore para el usuario', user.uid);
-    } catch (error) {
-      console.error('Error al guardar materias en Firestore:', error);
-    }
+    console.log('Materias guardadas correctamente.');
   }
+
 
   initPublicaStr() {
     this.materias.forEach(m => m.publicaStr = m.publica ? 'true' : 'false');

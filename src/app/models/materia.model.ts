@@ -20,5 +20,5 @@ export interface Materia {
   editandoDescripcion?: boolean;
   descripcionTemp?: string;
   ownerEmail?: string;
-    fechaCreacion?: string;
+  fechaCreacion?: string;
 }
