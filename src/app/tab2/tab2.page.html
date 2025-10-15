@@ -10,119 +10,143 @@
   </ion-button>
 
   <div class="materias-container">
-    <ion-card *ngFor="let materia of materias">
-      <img [src]="materia.imagen" alt="Foto de materia" class="materia-img">
+    <ion-item-sliding *ngFor="let materia of materias">
 
-      <div class="btn-img">
-        <!-- Botón para abrir selector de archivos -->
-        <ion-button (click)="cambiarFotoMateria(materia)" fill="clear">
-          <ion-icon name="cloud-upload-outline" class="cambiarFoto"></ion-icon>
-        </ion-button>
+      <ion-item-options side="start" [style.height]="materia.expandida ? '500px' : '265px'">
+        <ion-item-option color="primary" (click)="descargarMateria(materia)">
+          <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
 
-        <ion-button (click)="eliminarFoto(materia)" fill="clear" color="danger">
-          <ion-icon name="trash-bin-outline" class="eliminarFoto"></ion-icon>
-        </ion-button>
-      </div>
-      <ion-card-header>
-        <ion-card-title>{{ materia.nombre }}</ion-card-title>
+      <ion-item-options side="end" [style.height]="materia.expandida ? '500px' : '265px'">
+        <ion-item-option color="danger" (click)="eliminarMateria(materia)">
+          <ion-icon slot="icon-only" name="trash-bin-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
 
-        <!-- Contenedor para los botones -->
-        <div class="acciones">
-          <!-- Botón abrir/cerrar -->
 
-          <div class="expandir-container">
-            <ion-button fill="clear" size="small" (click)="toggleExpandir(materia)" class="expandir">
-              <ion-icon [name]="materia.expandida ? 'chevron-up-outline' : 'chevron-down-outline'">
-              </ion-icon>
+      <ion-item lines="none">
+        <ion-card class="materia-card" style="width:100%; margin:0;">
+
+
+          <img [src]="materia.imagen" alt="Foto de materia" class="materia-img">
+
+          <div class="btn-img">
+            <!-- Botón para cambiar imagen -->
+            <ion-button fill="clear" color="primary" (click)="abrirSelectorFoto(materia)">
+              <ion-icon name="image-outline"></ion-icon>
             </ion-button>
 
-          </div>
-          <ion-button fill="clear" size="small" (click)="editarMateria(materia)" class="editar">
-            <ion-icon name="pencil-outline"></ion-icon>
-          </ion-button>
-
-          <!-- Botón eliminar materia -->
-          <ion-button fill="clear" size="small" color="danger" (click)="eliminarMateria(materia)" class="eliminar">
-            <ion-icon name="trash-bin-outline"></ion-icon>
-          </ion-button>
-
-        </div>
-      </ion-card-header>
-
-      <ion-card-content *ngIf="materia.expandida">
-        <div *ngIf="materia.editandoDescripcion; else descripcionFija">
-          <ion-textarea [(ngModel)]="materia.descripcionTemp" placeholder="Descripción de la materia"
-            class="desc-input">
-          </ion-textarea>
-          <ion-button size="small" fill="clear" (click)="guardarDescripcion(materia)" class="check-desc">
-            <ion-icon name="checkmark-outline"></ion-icon>
-          </ion-button>
-        </div>
-
-        <!-- Si ya guardó la descripción -->
-        <ng-template #descripcionFija>
-          <div class="desc">
-            {{ materia.descripcion || '' }}
-          </div>
-          <ion-button fill="clear" size="small" (click)="editarDescripcion(materia)" class="editar-desc">
-            <ion-icon name="create-outline"></ion-icon>
-          </ion-button>
-        </ng-template>
-
-        <ion-list>
-          <ion-item *ngFor="let titulo of materia.titulos; let i = index">
-            {{ titulo }}
-            <ion-button slot="end" color="danger" fill="clear" size="small" (click)="eliminarTitulo(materia, i)">
+            <!-- Botón para eliminar imagen -->
+            <ion-button fill="clear" color="danger" (click)="eliminarFoto(materia)" class="btn-eliminar-foto">
               <ion-icon name="trash-bin-outline"></ion-icon>
             </ion-button>
 
-          </ion-item>
-        </ion-list>
+            <input type="file" [id]="'file-' + materia.id" accept="image/*" style="display: none"
+              (change)="onFileSelected($event, materia)" />
+          </div>
 
-        <!-- NUEVO: Botón para subir archivos -->
-        <ion-button expand="full" color="primary" (click)="subirArchivo(materia)" fill="clear" class="subirArchivo">
-          <ion-icon name="cloud-upload-outline"></ion-icon>
-        </ion-button>
+          <ion-card-header>
+            <ion-card-title>{{ materia.nombre }}</ion-card-title>
 
-        <!-- NUEVO: Lista de archivos subidos -->
-        <ion-list *ngIf="materia.archivos?.length">
-          <ion-item *ngFor="let archivo of materia.archivos">
-            <ion-label>
-              <!-- Mostramos el nombre y el link -->
-              <a [href]="archivo.url" target="_blank">{{ archivo.nombre }}</a>
-            </ion-label>
-            <!-- Botón para eliminar el archivo -->
-            <ion-button fill="clear" color="danger" (click)="eliminarArchivo(materia, archivo)">
-              <ion-icon name="trash-bin-outline"></ion-icon>
+            <!-- Contenedor para los botones -->
+            <div class="acciones">
+              <!-- Botón abrir/cerrar -->
+
+              <div class="expandir-container">
+                <ion-button fill="clear" size="small" (click)="toggleExpandir(materia)" class="expandir">
+                  <ion-icon [name]="materia.expandida ? 'chevron-up-outline' : 'chevron-down-outline'">
+                  </ion-icon>
+                </ion-button>
+
+              </div>
+              <ion-button fill="clear" size="small" (click)="editarMateria(materia)" class="editar">
+                <ion-icon name="pencil-outline"></ion-icon>
+              </ion-button>
+
+            </div>
+          </ion-card-header>
+
+          <ion-card-content *ngIf="materia.expandida">
+            <div *ngIf="materia.editandoDescripcion; else descripcionFija">
+              <ion-textarea [(ngModel)]="materia.descripcionTemp" placeholder="Descripción de la materia"
+                class="desc-input">
+              </ion-textarea>
+              <ion-button size="small" fill="clear" (click)="guardarDescripcion(materia)" class="check-desc">
+                <ion-icon name="checkmark-outline"></ion-icon>
+              </ion-button>
+            </div>
+
+            <!-- Si ya guardó la descripción -->
+            <ng-template #descripcionFija>
+              <div class="desc">
+                {{ materia.descripcion || '' }}
+              </div>
+              <ion-button fill="clear" size="small" (click)="editarDescripcion(materia)" class="editar-desc">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+            </ng-template>
+
+            <ion-list>
+              <ion-item *ngFor="let titulo of materia.titulos; let i = index">
+                {{ titulo }}
+                <ion-button slot="end" color="danger" fill="clear" size="small" (click)="eliminarTitulo(materia, i)">
+                  <ion-icon name="trash-bin-outline"></ion-icon>
+                </ion-button>
+
+              </ion-item>
+            </ion-list>
+
+            <!-- NUEVO: Botón para subir archivos -->
+            <ion-button expand="full" color="primary" (click)="subirArchivo(materia)" fill="clear" class="subirArchivo">
+              <ion-icon name="cloud-upload-outline"></ion-icon>
             </ion-button>
-          </ion-item>
-        </ion-list>
 
-        <!--Publica o privada-->
-        <ion-segment [(ngModel)]="materia.publicaStr" (ionChange)="onCambioPublica(materia, $event)" class="PubPriv">
-          <ion-segment-button [value]="'false'">
-            <ion-icon name="lock-closed-outline"></ion-icon>
-          </ion-segment-button>
+            <!-- NUEVO: Lista de archivos subidos -->
+            <ion-list *ngIf="materia.archivos?.length">
+              <ion-item *ngFor="let archivo of materia.archivos">
+                <ion-label>
+                  <!-- Mostramos el nombre y el link -->
+                  <a [href]="archivo.url" target="_blank">{{ archivo.nombre }}</a>
+                </ion-label>
+                <!-- Botón para eliminar el archivo -->
+                <ion-button fill="clear" color="danger" (click)="eliminarArchivo(materia, archivo)">
+                  <ion-icon name="trash-bin-outline"></ion-icon>
+                </ion-button>
+              </ion-item>
+            </ion-list>
 
-          <ion-segment-button [value]="'true'">
-            <ion-icon name="lock-open-outline"></ion-icon>
-          </ion-segment-button>
-        </ion-segment>
+            <!--Publica o privada-->
+            <ion-segment [(ngModel)]="materia.publicaStr" (ionChange)="onCambioPublica(materia, $event)"
+              class="PubPriv">
+              <ion-segment-button [value]="'false'">
+                <ion-icon name="lock-closed-outline"></ion-icon>
+              </ion-segment-button>
+
+              <ion-segment-button [value]="'true'">
+                <ion-icon name="lock-open-outline"></ion-icon>
+              </ion-segment-button>
+            </ion-segment>
 
 
-        <div class="favYdown">
-          <ion-button expand="full" fill="clear" color="warning" (click)="toggleFavorito(materia)" class="fav">
-            <ion-icon [name]="materia.favorito ? 'heart-dislike-outline' : 'heart-outline'">
-            </ion-icon>
-          </ion-button>
+            <div class="favYdown">
+              <ion-button expand="full" fill="clear" color="warning" (click)="toggleFavorito(materia)" class="fav">
+                <ion-icon [name]="materia.favorito ? 'heart-dislike-outline' : 'heart-outline'">
+                </ion-icon>
+              </ion-button>
 
-          <ion-button fill="clear" (click)="descargarMateria(materia)" class="down">
-            <ion-icon name="download-outline" class="icon-down"></ion-icon>
-          </ion-button>
-
-        </div>
-
-      </ion-card-content>
-    </ion-card>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+    </ion-item-sliding>
   </div>
+
+  <div class="acciones-todas">
+    <ion-button fill="clear" color="primary" (click)="toggleExpandirTodos()" class="acciones-todasBtn">
+      <ion-icon [name]="todasExpandidas ? 'chevron-up-outline' : 'chevron-down-outline'" slot="start"
+        class="acciones-todasIcon"></ion-icon>
+    </ion-button>
+  </div>
+
 </ion-content>

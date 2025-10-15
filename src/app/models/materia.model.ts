@@ -7,7 +7,7 @@ export interface Archivo {
 }
 
 export interface Materia {
-  id?: string;
+  id: string;
   nombre: string;
   descripcion: string;
   imagen: string;
@@ -19,6 +19,7 @@ export interface Materia {
   archivos?: Archivo[]; // URLs de archivos subidos a Filestack
   editandoDescripcion?: boolean;
   descripcionTemp?: string;
-  ownerEmail?: string;
+  ownerEmail: string;
+  ownerId: string;
   fechaCreacion?: string;
 }
