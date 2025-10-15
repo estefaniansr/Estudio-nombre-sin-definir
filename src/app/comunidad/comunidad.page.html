@@ -11,19 +11,29 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
 
+  <ion-button fill="clear" (click)="recargarMaterias()" class="recargarMaterias">
+    <ion-icon name="reload-outline" class="recargarMateriasIcon"></ion-icon>
+  </ion-button>
+
   <div class="materias-container">
+
     <div *ngFor="let materia of materias" class="materia-card">
 
       <ion-card>
         <ion-img class="materia-img" [src]="materia.imagen"></ion-img>
         <ion-card-header>
+
+
           <ion-card-title>{{ materia.nombre }}</ion-card-title>
           <small>Creado por: {{ materia.ownerEmail }}</small>
         </ion-card-header>
         <ion-card-content>
           <p>{{ materia.descripcion }}</p>
+
           <ion-list *ngIf="materia.archivos?.length">
+
             <ion-item *ngFor="let archivo of materia.archivos">
+
               <a [href]="archivo.url" target="_blank">{{ archivo.nombre }}</a>
             </ion-item>
           </ion-list>
@@ -32,6 +42,8 @@
           <ion-icon name="download-outline" class="icon-down"></ion-icon>
         </ion-button>
       </ion-card>
+
+
     </div>
 
     <div *ngIf="materias.length === 0" class="ion-text-center ion-padding">

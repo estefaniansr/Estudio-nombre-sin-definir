@@ -29,6 +29,7 @@ export class AjustesPage {
 
   seccionActiva: 'seguridad' | 'idioma' | 'tema' | 'soporte' | null = null;
   editarPerfilAbierto: boolean = false;
+  preferenciaAccion: 'descargar' | 'favoritos' | 'editarTitulo' = 'descargar';
 
   modoOscuro = false;
 
@@ -81,6 +82,7 @@ export class AjustesPage {
           const data = docSnap.data() as any;
           this.nombre = data.nombre;
           this.fecha = data.fecha;
+          this.preferenciaAccion = data.preferenciaAccion || 'descargar';
         }
       } catch (error) {
         console.error('Error cargando datos del usuario:', error);
@@ -98,7 +100,7 @@ export class AjustesPage {
       return;
     }
 
-    const user = this.user; // ✅ aseguramos que no es null
+    const user = this.user; 
 
     await this.spinner.run(async () => {
       try {

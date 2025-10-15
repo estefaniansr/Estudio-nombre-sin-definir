@@ -15,6 +15,12 @@ ion-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* == expandir === */
+.expandir-container {
+  position: relative;
+  right: 30px;
+}
+
 /* ===== Botón agregar ===== */
 
 .agregar-materias {
@@ -76,13 +82,35 @@ ion-header {
   margin-top: 20px;
 }
 
+ion-item-sliding {
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+ion-item-sliding.active-slide {
+  transform: scale(1.02);
+  box-shadow: 0 8px 18px rgba(128, 0, 255, 0.25);
+}
+
+ion-item {
+  --background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+
 /* ===== Tarjeta de materia ===== */
 
 ion-card {
   background: #141a1e;
   border-radius: 16px;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  margin: 0;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
 }
 
 .materia-img {
@@ -103,23 +131,15 @@ ion-card {
   /* uno a la izq y otro a la der */
   align-items: center;
   z-index: 5;
-  pointer-events: none;
 }
 
-.cambiarFoto,
-.eliminarFoto {
-  background: transparent;
-  width: 20px;
-  height: 20px;
+.btn-img ion-button {
+  background: rgb(11, 18, 21, 0.9);
+  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
-.cambiarFoto {
-  color: #8000ff;
-}
-
 
 /* ===== Header de la tarjeta ===== */
 ion-card-header {
@@ -214,12 +234,16 @@ ion-item {
 /* ==== favoritos ======== */
 
 .custom-segment {
-  --background: #101518; /* fondo del contenedor */
+  --background: #101518;
+  /* fondo del contenedor */
   --border-radius: 12px;
-  --indicator-background: #8000ff; /* fondo del botón activo */
+  --indicator-background: #8000ff;
+  /* fondo del botón activo */
   --indicator-border-radius: 12px;
-  --color-checked: #fff; /* texto activo */
-  --color: #8000ff; /* texto inactivo */
+  --color-checked: #fff;
+  /* texto activo */
+  --color: #8000ff;
+  /* texto inactivo */
   margin: 1rem auto;
   display: flex;
 }
@@ -237,11 +261,13 @@ ion-item {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px; /* controla la distancia entre los íconos */
+  gap: 4px;
+  /* controla la distancia entre los íconos */
   border: 1px solid #8000ff;
   border-radius: 25px;
   overflow: hidden;
-  width: 90px; /* más compacto */
+  width: 90px;
+  /* más compacto */
   height: 34px;
   margin: 8px auto;
   background: #101518;
@@ -262,7 +288,8 @@ ion-item {
   justify-content: center;
   align-items: center;
   padding: 0;
-  min-width: 40px; /* más angosto cada botón */
+  min-width: 40px;
+  /* más angosto cada botón */
 }
 
 .PubPriv ion-icon {
@@ -271,12 +298,41 @@ ion-item {
   padding: 0;
 }
 
-.PubPriv ion-segment-button[aria-checked="true"] { 
+.PubPriv ion-segment-button[aria-checked="true"] {
   background: #8000ff;
   color: #fff;
 }
 
-.PubPriv ion-segment-button[aria-checked="false"] { 
+.PubPriv ion-segment-button[aria-checked="false"] {
   background: transparent;
+  color: #8000ff;
+}
+
+/* ===== sliding ===== */
+ion-item-sliding.activated {
+  background: linear-gradient(to right, #4caf50 50%, #f44336 50%);
+}
+
+/* ==== expandir todas ==== */
+.acciones-todas {
+  position: fixed;
+  bottom: 90px;
+  right: 5px;
+  top: 70px;
+  z-index: 10;
+  color: #fffffc;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.acciones-todasBtn {
+  background: transparent;
+}
+
+.acciones-todasIcon {
   color: #8000ff;
 }

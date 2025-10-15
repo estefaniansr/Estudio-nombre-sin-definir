@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+
 import { Router } from '@angular/router';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
@@ -10,6 +12,9 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   onAuthStateChanged,
+  signInWithCredential,
+  getRedirectResult,
+  signInWithRedirect, 
   GithubAuthProvider,
   sendPasswordResetEmail,
   updateProfile
@@ -189,21 +194,27 @@ export class Tab1Page {
   }
 
   async loginConGoogle() {
-
-    const provider = new GoogleAuthProvider();
-
     try {
-      const result = await signInWithPopup(auth, provider);
+      const googleUser = await GoogleAuth.signIn();
+      console.log('Usuario Google:', googleUser);
+
+      const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
+
+      // Loguear en Firebase
+      const result = await signInWithCredential(auth, credential);
       this.user = result.user;
 
+      // Guardar o actualizar datos en Firestore
       await setDoc(doc(db, 'usuarios', this.user.uid), {
         nombre: this.user.displayName,
         fecha: '2025-01-01',
         email: this.user.email
-      })
+      }, { merge: true });
 
-      await updateProfile(this.user, { displayName: this.nombre });
+      // Actualizar displayName de Firebase si es necesario
+      await updateProfile(this.user, { displayName: this.user.displayName });
 
+      // Cargar datos locales y navegar a tab2
       if (this.user) await this.cargarDatosUsuario(this.user.uid);
       console.log('Login con Google exitoso:', this.user);
       this.router.navigate(['/tabs/tab2']);
@@ -211,40 +222,38 @@ export class Tab1Page {
       console.error('Error al iniciar sesión con Google:', error);
       await this.mostrarAlert('Error', 'No se pudo iniciar sesión con Google');
     }
-
-
-
-    this.router.navigate(['/tabs/tab1']);
-
-
   }
 
   async loginConGithub() {
     const provider = new GithubAuthProvider();
 
     try {
-      const result = await signInWithPopup(auth, provider);
+      // Redirige al navegador para autenticarse en GitHub
+      await signInWithRedirect(auth, provider);
+
+      // Cuando el usuario regresa de GitHub, obtenemos el resultado
+      const result = await getRedirectResult(auth);
+      if (!result) return; // Si todavía no hay resultado, salimos
+
       this.user = result.user;
 
+      // Guardar o actualizar datos en Firestore
       await setDoc(doc(db, 'usuarios', this.user.uid), {
         nombre: this.user.displayName,
         fecha: '2025-01-01',
         email: this.user.email
-      })
+      }, { merge: true });
 
-      await updateProfile(this.user, { displayName: this.nombre });
+      // Actualizar displayName de Firebase
+      await updateProfile(this.user, { displayName: this.user.displayName });
 
       if (this.user) await this.cargarDatosUsuario(this.user.uid);
-      console.log('Login con GitHub exitoso:', this.user);
+      console.log('Login con GitHub exitoso (móvil):', this.user);
       this.router.navigate(['/tabs/tab2']);
     } catch (error) {
-      console.error('Error al iniciar sesión con GitHub:', error);
+      console.error('Error login con GitHub (móvil):', error);
       await this.mostrarAlert('Error', 'No se pudo iniciar sesión con GitHub');
     }
-
-
-
-    this.router.navigate(['/tabs/tab1']);
   }
 
   async guardarPerfil() {

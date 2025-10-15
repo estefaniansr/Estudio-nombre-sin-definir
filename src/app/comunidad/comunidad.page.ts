@@ -3,7 +3,7 @@ import { AlertController, IonicModule, ActionSheetController } from '@ionic/angu
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Materia } from '../models/materia.model';
-import { collection, getDocs, collectionGroup, where, query } from 'firebase/firestore';
+import { collection, getDocs, collectionGroup, where, query, doc, updateDoc, arrayUnion, arrayRemove, increment } from 'firebase/firestore';
 import { db, auth } from '../../firebase-config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { SpinnerService } from '../services/spinner.service';
@@ -23,6 +23,7 @@ export class ComunidadPage implements OnInit {
   currentUserEmail: string | null = null;
   creadores: string[] = [];
   materiasOriginal: Materia[] = [];
+  girando = false;
 
   constructor(private spinner: SpinnerService, private alertCtrl: AlertController, private actionSheetCtrl: ActionSheetController) { }
 
@@ -38,6 +39,12 @@ export class ComunidadPage implements OnInit {
     }, 'Cargando materias de la comunidad...');
   }
 
+  async recargarMaterias() {
+    await this.spinner.run(async () => {
+      await this.cargarMaterias();
+    }, 'Cargando materias...');
+
+  }
 
   async cargarMaterias() {
     try {
@@ -53,7 +60,7 @@ export class ComunidadPage implements OnInit {
         return materiasSnapshot.docs
           .map(m => {
             const data = m.data() as Materia;
-            return { id: m.id, ...data, publica: !!data.publica, ownerEmail: userDoc.data()['email'] }; // fuerza booleano
+            return { ...data, id: m.id, publica: !!data.publica, ownerEmail: userDoc.data()['email'], ownerId: userDoc.id }; // fuerza booleano
           })
           .filter(materia => materia.publica); // solo públicas
       });
@@ -78,6 +85,7 @@ export class ComunidadPage implements OnInit {
       console.error('Error cargando materias de la comunidad:', error);
     }
   }
+
   async abrirFiltro() {
     const buttons: any[] = [
       {
@@ -128,7 +136,6 @@ export class ComunidadPage implements OnInit {
     });
     await actionSheet.present();
   }
-
 
   esPropia(materia: Materia): boolean {
     if (!materia.archivos) return false;
@@ -202,6 +209,5 @@ export class ComunidadPage implements OnInit {
       await alert.present();
     }
   }
-
 
 }

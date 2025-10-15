@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IonicModule, IonInput, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,11 +7,14 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Filesystem } from '@capacitor/filesystem';
 import { FilestackService } from '../services/filestack.service';
 import { getAuth } from 'firebase/auth';
-import { collection, addDoc, getFirestore, getDocs, query, where, deleteDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, getFirestore, getDocs, getDoc, query, where, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
 import * as JSZip from 'jszip';
 import * as FileSaver from 'file-saver';
 import { SpinnerService } from '../services/spinner.service';
+import { Capacitor } from '@capacitor/core';
+import { auth } from '../../firebase-config';
+import { onAuthStateChanged } from 'firebase/auth';
 
 
 @Component({
@@ -22,8 +25,11 @@ import { SpinnerService } from '../services/spinner.service';
   imports: [IonicModule, CommonModule, FormsModule]
 })
 export class Tab2Page {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   materias: Materia[] = [];
   user: any = null;
+  todasExpandidas: boolean = false;
+  currentUserEmail: string | null = null;
 
 
   constructor(private filestackService: FilestackService, private alertCtrl: AlertController, private spinner: SpinnerService) {
@@ -39,6 +45,11 @@ export class Tab2Page {
 
   }
 
+  async ngOnInit() {
+    onAuthStateChanged(auth, user => {
+      this.currentUserEmail = user?.email || null;
+    });
+  }
 
   async mostrarPrompt(header: string, value: string = ''): Promise<string | null> {
     return new Promise(async (resolve) => {
@@ -161,7 +172,13 @@ export class Tab2Page {
       expandida: false,
       favorito: false,
       publica: false,
-      archivos: []
+      archivos: [],
+      likes: 0,
+      dislikes: 0,
+      likedBy: [],
+      dislikedBy: [],
+      ownerEmail: this.currentUserEmail!,  // email del usuario actual
+      ownerId: auth.currentUser?.uid!
     };
 
     await this.spinner.run(async () => {
@@ -173,6 +190,11 @@ export class Tab2Page {
     }, 'Creando materia');
 
     this.materias.push(nuevaMateria);
+  }
+
+  toggleExpandirTodos() {
+    this.todasExpandidas = !this.todasExpandidas;
+    this.materias.forEach(m => m.expandida = this.todasExpandidas);
   }
 
   toggleExpandir(materia: Materia) {
@@ -243,25 +265,53 @@ export class Tab2Page {
   async eliminarMateria(materia: Materia) {
     if (!this.user) return;
 
-    if (!materia.id) {
-      console.error('No se puede eliminar la materia: no tiene ID');
-      return;
-    }
+    // Primero preguntamos si está seguro
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmar eliminación',
+      message: `¿Estás seguro de que deseas eliminar la materia "${materia.nombre}"? Esta acción no se puede deshacer.`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('El usuario canceló la eliminación.');
+          }
+        },
+        {
+          text: 'Eliminar',
+          handler: async () => {
+            try {
+              if (!materia.id) {
+                console.error('No se puede eliminar la materia: no tiene ID');
+                return;
+              }
 
-    try {
-      console.log('Intentando eliminar materia con ID:', materia.id);
-      await deleteDoc(doc(db, 'usuarios', this.user.uid, 'materias', materia.id));
+              await deleteDoc(doc(db, 'usuarios', this.user.uid, 'materias', materia.id));
 
-      // Actualizar el arreglo local para reflejar la UI
-      this.materias = this.materias.filter(m => m.id !== materia.id);
+              // Actualizar el arreglo local para reflejar la UI
+              this.materias = this.materias.filter(m => m.id !== materia.id);
 
-      console.log(`Materia "${materia.nombre}" eliminada correctamente`);
-    } catch (error) {
-      console.error('Error eliminando materia:', error);
+              console.log(`Materia "${materia.nombre}" eliminada correctamente`);
+            } catch (error) {
+              console.error('Error eliminando materia:', error);
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  cambiarFotoMateria(materia: Materia) {
+    if (Capacitor.getPlatform() === 'web') {
+      this.fileInput.nativeElement.click();
+    } else {
+      this.cambiarFotoMateriaMovil(materia);
     }
   }
 
-  async cambiarFotoMateria(materia: Materia) {
+  async cambiarFotoMateriaMovil(materia: Materia) {
     try {
       const image = await Camera.getPhoto({
         quality: 90,
@@ -269,18 +319,29 @@ export class Tab2Page {
         resultType: CameraResultType.DataUrl,
         source: CameraSource.Photos
       });
-
       materia.imagen = image.dataUrl!;
       this.guardarMaterias();
     } catch (error) {
       console.log('No se seleccionó ninguna foto', error);
     }
-  } // corregir
+  }
+
+  onFileSelected(event: any, materia: Materia) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      materia.imagen = reader.result as string;
+      this.guardarMaterias();
+    };
+    reader.readAsDataURL(file);
+  }
 
   eliminarFoto(materia: Materia) {
     materia.imagen = 'assets/default.png';
     this.guardarMaterias();
-  } // corregir
+  }
 
   async descargarMateria(materia: Materia) {
     if (!materia.archivos || materia.archivos.length === 0) {
@@ -340,9 +401,15 @@ export class Tab2Page {
     console.log('Materias guardadas correctamente.');
   }
 
-
   initPublicaStr() {
     this.materias.forEach(m => m.publicaStr = m.publica ? 'true' : 'false');
+  }
+
+  abrirSelectorFoto(materia: Materia) {
+    const inputEl = document.getElementById('file-' + materia.id) as HTMLInputElement;
+    if (inputEl) {
+      inputEl.click();
+    }
   }
 
   async onCambioPublica(materia: any, event: any) {
@@ -366,7 +433,11 @@ export class Tab2Page {
       try {
         const materiasRef = collection(db, 'usuarios', user.uid, 'materias');
         const snapshot = await getDocs(materiasRef);
-        this.materias = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Materia));
+        this.materias = snapshot.docs.map(d => {
+          const materia = { id: d.id, ...d.data() } as Materia;
+          materia.expandida = false; 
+          return materia;
+        });
       } catch (error) {
         console.error('Error al cargar materias:', error);
       }
