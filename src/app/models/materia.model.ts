@@ -16,7 +16,7 @@ export interface Materia {
   favorito: boolean;
   publica: boolean;
   publicaStr?: string;
-  archivos?: Archivo[]; // URLs de archivos subidos a Filestack
+  archivos: Archivo[]; // URLs de archivos subidos a Filestack
   editandoDescripcion?: boolean;
   descripcionTemp?: string;
   ownerEmail: string;
