@@ -6,7 +6,7 @@ import { Materia } from '../models/materia.model';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Filesystem } from '@capacitor/filesystem';
 import { FilestackService } from '../services/filestack.service';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged  } from 'firebase/auth';
 import { collection, addDoc, getFirestore, getDocs, getDoc, query, where, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
 import * as JSZip from 'jszip';
@@ -14,7 +14,6 @@ import * as FileSaver from 'file-saver';
 import { SpinnerService } from '../services/spinner.service';
 import { Capacitor } from '@capacitor/core';
 import { auth } from '../../firebase-config';
-import { onAuthStateChanged } from 'firebase/auth';
 
 
 @Component({
@@ -424,6 +423,8 @@ export class Tab2Page {
       console.error('Error guardando cambio de estado público:', error);
     }
   }
+
+  
 
   async cargarMaterias() {
     const user = getAuth().currentUser;

@@ -2,6 +2,13 @@
   <ion-toolbar>
     <ion-title>Mis Materias</ion-title>
   </ion-toolbar>
+
+  <div class="acciones-todas">
+    <ion-button fill="clear" color="primary" (click)="toggleExpandirTodos()" class="acciones-todasBtn">
+      <ion-icon [name]="todasExpandidas ? 'chevron-up-outline' : 'chevron-down-outline'" slot="start"
+        class="acciones-todasIcon"></ion-icon>
+    </ion-button>
+  </div>
 </ion-header>
 
 <ion-content class="ion-padding">
@@ -141,12 +148,4 @@
       </ion-item>
     </ion-item-sliding>
   </div>
-
-  <div class="acciones-todas">
-    <ion-button fill="clear" color="primary" (click)="toggleExpandirTodos()" class="acciones-todasBtn">
-      <ion-icon [name]="todasExpandidas ? 'chevron-up-outline' : 'chevron-down-outline'" slot="start"
-        class="acciones-todasIcon"></ion-icon>
-    </ion-button>
-  </div>
-
 </ion-content>

@@ -164,13 +164,13 @@ ion-card-title {
   .eliminar {
     color: #8000ff;
     position: relative;
-    right: 135px;
+    right: 125px;
   }
 
   .expandir {
     position: relative;
     color: #8000ff;
-    left: 180px;
+    left: 150px;
   }
 
   .eliminar {
@@ -183,8 +183,6 @@ ion-card-title {
 .editar-desc {
   color: #8000ff;
   position: relative;
-  top: -15px;
-  left: 240px;
 }
 
 .check-desc {
@@ -224,11 +222,14 @@ ion-item {
 
 /* ===== subir archivo ====== */
 
-.subirArchivo ion-icon {
+.subirArchivo {
+  border: 1px solid #8000ff;
+  border-radius: 12px;
   color: #8000ff;
-  outline: none;
-  position: relative;
-  right: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
 }
 
 /* ==== favoritos ======== */
@@ -318,7 +319,7 @@ ion-item-sliding.activated {
   position: fixed;
   bottom: 90px;
   right: 5px;
-  top: 70px;
+  top: 0;
   z-index: 10;
   color: #fffffc;
   border-radius: 50%;
