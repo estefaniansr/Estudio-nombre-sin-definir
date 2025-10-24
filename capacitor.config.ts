@@ -5,8 +5,15 @@ const config: CapacitorConfig = {
   appName: 'proyecto',
   webDir: 'www',
   server: {
-    androidScheme: 'https'
-  }
+    androidScheme: 'https',
+  },
+  plugins: {
+    GoogleAuth: {
+      scopes: ['profile', 'email'],
+      serverClientId: '303785173965-tjkvrmans023d896jokiknl2iti7kc2e.apps.googleusercontent.com',
+      forceCodeForRefreshToken: true,
+    },
+  },
 };
 
 export default config;

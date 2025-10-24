@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
-
 import { Router } from '@angular/router';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
@@ -257,10 +256,7 @@ export class Tab1Page {
     try {
       const googleUser = await GoogleAuth.signIn();
       console.log('Usuario Google:', googleUser);
-
       const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
-
-      // Loguear en Firebase
       const result = await signInWithCredential(auth, credential);
       this.user = result.user;
 
@@ -284,11 +280,11 @@ export class Tab1Page {
     }
   }
 
-/**
-@function loginConGithub
-Inicia sesión mediante la cuenta de GitHub, guarda o actualiza los datos del usuario en Firestore y navega a la página principal.
-@return { Promise<void> } Retorna una promesa cuando finaliza el proceso de inicio de sesión.
-*/
+  /**
+  @function loginConGithub
+  Inicia sesión mediante la cuenta de GitHub, guarda o actualiza los datos del usuario en Firestore y navega a la página principal.
+  @return { Promise<void> } Retorna una promesa cuando finaliza el proceso de inicio de sesión.
+  */
   async loginConGithub() {
     const provider = new GithubAuthProvider();
 
