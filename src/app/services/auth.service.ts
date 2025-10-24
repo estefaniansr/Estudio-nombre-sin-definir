@@ -26,17 +26,32 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  // Registro de usuario
+    /**
+   * Método para registrar un nuevo usuario.
+   * @param nombre Nombre del usuario
+   * @param email Email del usuario
+   * @param password Contraseña del usuario
+   * @param fecha Fecha de registro (puede ser la fecha de nacimiento o la fecha de creación de cuenta)
+   * @returns Observable con la respuesta del backend que contiene un mensaje de éxito o error.
+   */
   register(nombre: string, email: string, password: string, fecha: string): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.baseUrl}register`, { nombre, email, password, fecha }, { withCredentials: true });
   }
 
-  // Login
+  /**
+   * Método para iniciar sesión con un usuario registrado.
+   * @param email Email del usuario
+   * @param password Contraseña del usuario
+   * @returns Observable con la respuesta que contiene un token de acceso y un mensaje de éxito o error.
+   */
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.baseUrl}login`, { email, password }, { withCredentials: true });
   }
 
-  // Logout
+  /**
+   * Método para cerrar sesión del usuario.
+   * @returns Observable con la respuesta del backend que confirma que el usuario ha cerrado sesión correctamente.
+   */
   logout(): Observable<any> {
     return this.http.post(`${this.baseUrl}logout`, {}, { withCredentials: true });
   }

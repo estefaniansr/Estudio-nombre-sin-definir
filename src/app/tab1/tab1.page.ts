@@ -14,7 +14,7 @@ import {
   onAuthStateChanged,
   signInWithCredential,
   getRedirectResult,
-  signInWithRedirect, 
+  signInWithRedirect,
   GithubAuthProvider,
   sendPasswordResetEmail,
   updateProfile
@@ -50,10 +50,20 @@ export class Tab1Page {
     });
   }
 
-  // Método para ir a Ajustes
+  /**
+@function irAjustes
+@description Al ejecutarse redirige a la página de Ajustes del usuario.
+*/
   irAjustes() {
     this.router.navigate(['/ajustes']);
   }
+
+  /**
+@function mostrarToast
+@description Muestra un mensaje tipo Toast en pantalla durante 4 segundos.
+@param { string } message Mensaje que se mostrará en el Toast.
+@return { Promise<void> } Retorna una promesa cuando el Toast es presentado.
+*/
 
   async mostrarToast(message: string) {
     const toast = await this.toastCtrl.create({
@@ -64,6 +74,13 @@ export class Tab1Page {
     });
     toast.present();
   }
+  /**
+  @function mostrarAlert
+  @description Muestra una alerta con un título y un mensaje en pantalla.
+  @param { string } header Título o encabezado de la alerta.
+  @param { string } message Texto del mensaje que se mostrará.
+  @return { Promise<void> } Retorna una promesa cuando la alerta ha sido presentada.
+  */
 
   async mostrarAlert(header: string, message: string) {
     const alert = await this.alertCtrl.create({
@@ -74,6 +91,12 @@ export class Tab1Page {
     await alert.present();
   }
 
+  /**
+@function cargarDatosUsuario
+ @description Carga los datos del usuario desde Firestore utilizando su UID y actualiza los valores locales.
+@param { string } uid Identificador único del usuario autenticado.
+@return { Promise<void> } Retorna una promesa cuando finaliza la carga de los datos del usuario.
+*/
   async cargarDatosUsuario(uid: string) {
     await this.spinner.run(async () => {
       try {
@@ -97,18 +120,39 @@ export class Tab1Page {
     }, 'Cargando datos del usuario');
   }
 
+  /**
+@function togglePassword
+@description Alterna la visibilidad de la contraseña.
+*/
+
+
   togglePassword() {
     this.passwordVisible = !this.passwordVisible;
   }
+
+  /**
+@function toggleAjustes
+@description Alterna la visualización del panel de ajustes.*/
 
   toggleAjustes() {
     this.ajustesAbiertos = !this.ajustesAbiertos;
   }
 
+  /**
+@function toggleEditarPerfil
+@description Muestra u oculta el formulario de edición del perfil del usuario.
+*/
   toggleEditarPerfil() {
     this.editarPerfilAbierto = !this.editarPerfilAbierto;
   }
 
+  /**
+@function iniciarSesion
+@description Inicia sesión con correo y contraseña mediante Firebase Authentication. Valida los campos y verifica el correo del usuario.
+@param { string } usuario Correo electrónico del usuario.
+@param { string } password Contraseña del usuario.
+@return { Promise<void> } Retorna una promesa cuando finaliza el intento de inicio de sesión.
+*/
   async iniciarSesion(usuario: string, password: string) {
 
     if (!usuario || !password) {
@@ -161,6 +205,12 @@ export class Tab1Page {
       return;
     }
 
+    /**
+@function olvidePassword
+@description Envía un correo al usuario para restablecer su contraseña si el correo existe.
+@param { string } usuario Correo electrónico del usuario que desea recuperar su contraseña.
+@return { Promise<void> } Retorna una promesa cuando se envía el correo o ocurre un error.
+*/
     await this.spinner.run(async () => {
       try {
         await sendPasswordResetEmail(auth, usuario);
@@ -175,6 +225,11 @@ export class Tab1Page {
     }, 'Enviando correo...');
   }
 
+  /**
+@function restablecerPassword
+@description Envía un correo de restablecimiento de contraseña al correo del usuario.
+@return { Promise<void> } Retorna una promesa cuando el correo de restablecimiento ha sido enviado.
+*/
   async restablecerPassword() {
     if (!this.user?.email) {
       await this.mostrarAlert('Error', 'No se encontró tu correo registrado');
@@ -193,6 +248,11 @@ export class Tab1Page {
     }
   }
 
+  /**
+@function loginConGoogle
+@description Inicia sesión mediante la cuenta de Google, guarda o actualiza los datos del usuario en Firestore y navega a la página principal.
+@return { Promise<void> } Retorna una promesa cuando finaliza el proceso de inicio de sesión.
+*/
   async loginConGoogle() {
     try {
       const googleUser = await GoogleAuth.signIn();
@@ -224,6 +284,11 @@ export class Tab1Page {
     }
   }
 
+/**
+@function loginConGithub
+Inicia sesión mediante la cuenta de GitHub, guarda o actualiza los datos del usuario en Firestore y navega a la página principal.
+@return { Promise<void> } Retorna una promesa cuando finaliza el proceso de inicio de sesión.
+*/
   async loginConGithub() {
     const provider = new GithubAuthProvider();
 
@@ -256,6 +321,12 @@ export class Tab1Page {
     }
   }
 
+  /**
+@function guardarPerfil
+@description Guarda los cambios del perfil del usuario en Firestore y actualiza su nombre mostrado en Firebase.
+@return { Promise<void> } Retorna una promesa cuando el perfil ha sido actualizado.
+*/
+
   async guardarPerfil() {
     if (!this.nombre || !this.fecha) {
       this.mostrarToast('Completa todos los campos');
@@ -273,6 +344,12 @@ export class Tab1Page {
       this.mostrarToast('No se pudo actualizar el perfil');
     }
   }
+
+  /**
+@function irRegistro
+@description Navega a la página de registro para crear una nueva cuenta.
+@return { void } No retorna ningún valor.
+*/
 
   irRegistro() {
     this.router.navigate(['/registro']);

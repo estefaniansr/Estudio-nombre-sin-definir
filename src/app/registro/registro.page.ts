@@ -33,14 +33,28 @@ export class RegistroPage {
 
   constructor(private router: Router, private alertCtrl: AlertController, private spinner: SpinnerService) { }
 
+  /**
+   * @function togglePassword
+   * @description Alterna la visibilidad de la contraseña ingresada por el usuario.   */
   togglePassword() {
     this.passwordVisible = !this.passwordVisible;
   }
 
+  /**
+   * @function toggleRepPassword
+   * @description Alterna la visibilidad de la contraseña repetida ingresada por el usuario.
+   */
   toggleRepPassword() {
     this.repPasswordVisible = !this.repPasswordVisible;
   }
 
+    /**
+   * @function mostrarAlert
+   * @description Muestra una alerta con un mensaje.
+   * @param { string } header El título de la alerta.
+   * @param { string } message El mensaje que se muestra en la alerta.
+   * @return { Promise<void> } Retorna una promesa que se resuelve cuando la alerta ha sido presentada.
+   */
   async mostrarAlert(header: string, message: string) {
     const alert = await this.alertCtrl.create({
       header,

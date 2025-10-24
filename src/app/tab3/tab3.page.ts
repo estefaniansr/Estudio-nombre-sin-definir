@@ -29,6 +29,11 @@ export class Tab3Page {
     });
   }
 
+  /**
+@function cargarFavoritos
+@description Carga las materias marcadas como favoritas del usuario desde Firestore y las guarda en la propiedad `favoritos`.
+@return { Promise<void> } No retorna valor, pero actualiza el array `favoritos` con los documentos de Firestore.
+*/
   async cargarFavoritos() {
     if (!this.user) return;
 
@@ -44,6 +49,12 @@ export class Tab3Page {
       }
     }, 'Cargando materias favoritas...');
   }
+
+  /**
+@function abrirArchivo
+@description Abre una nueva ventana del navegador con el archivo en la URL proporcionada.
+@param { string } url URL del archivo que se desea abrir en una nueva pestaña del navegador.
+*/
 
   abrirArchivo(url: string) {
     window.open(url, '_blank');
