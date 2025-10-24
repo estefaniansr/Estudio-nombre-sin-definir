@@ -31,6 +31,11 @@ export class TabsPage {
       });
   }
 
+  /**
+@function updateTabBar
+@description Controla la visibilidad de la barra de pestañas (TabBar) dependiendo de la URL actual. Si estamos en Tab1 y no hay usuario logueado, la barra de pestañas se oculta.
+@param { string } url La URL de la ruta actual, utilizada para determinar si debemos mostrar la barra de pestañas.*/
+
   private updateTabBar(url: string) {
     // Si estamos en Tab1, solo mostrar barra si hay usuario
     if (url.endsWith('/tab1')) {

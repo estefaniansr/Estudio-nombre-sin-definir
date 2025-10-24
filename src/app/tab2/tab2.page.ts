@@ -6,7 +6,7 @@ import { Materia } from '../models/materia.model';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Filesystem } from '@capacitor/filesystem';
 import { FilestackService } from '../services/filestack.service';
-import { getAuth, onAuthStateChanged  } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { collection, addDoc, getFirestore, getDocs, getDoc, query, where, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
 import * as JSZip from 'jszip';
@@ -44,12 +44,23 @@ export class Tab2Page {
 
   }
 
+  /**
+@function ngOnInit
+@description Se ejecuta al inicializar el componente y obtiene el correo del usuario autenticado. Actualiza la propiedad currentUserEmail.
+*/
   async ngOnInit() {
     onAuthStateChanged(auth, user => {
       this.currentUserEmail = user?.email || null;
     });
   }
 
+  /**
+@function mostrarPrompt
+@description Muestra un prompt con un campo de texto para ingresar o editar un valor.
+@param { string } header Título del prompt.
+@param { string } value Valor inicial del campo de entrada.
+@return { Promise<string | null> } Retorna el texto ingresado o null si se cancela.
+*/
   async mostrarPrompt(header: string, value: string = ''): Promise<string | null> {
     return new Promise(async (resolve) => {
       const alert = await this.alertCtrl.create({
@@ -64,6 +75,11 @@ export class Tab2Page {
     });
   }
 
+  /**
+@function pedirPermisoAlmacenamiento
+@description Solicita permisos de almacenamiento al usuario y muestra una alerta si son denegados.
+@return { Promise<boolean> } Retorna true si los permisos fueron otorgados, false en caso contrario.
+*/
   async pedirPermisoAlmacenamiento(): Promise<boolean> {
     try {
       const result = await Filesystem.requestPermissions();
@@ -84,7 +100,12 @@ export class Tab2Page {
       return false;
     }
   }
-
+  /**
+  @function getFileExtension
+  @description Obtiene la extensión de archivo desde una URL, o devuelve "bin" si no puede determinarla.
+  @param { string } url Dirección del archivo.
+  @return { string } Extensión del archivo detectada o "bin".
+  */
   getFileExtension(url: string): string {
     try {
       // 1. Intentar obtener la extensión del nombre real del archivo si la URL lo contiene
@@ -110,6 +131,12 @@ export class Tab2Page {
     }
   }
 
+  /**
+@function subirArchivo
+@description Permite al usuario seleccionar y subir un archivo asociado a una materia, guardando la información en Firestore.
+@param { Materia } materia Objeto de la materia donde se agregará el archivo.
+@return { Promise<void> } Retorna una promesa cuando el archivo ha sido subido y guardado.
+*/
   async subirArchivo(materia: Materia) {
 
     const permisoOtorgado = await this.pedirPermisoAlmacenamiento();
@@ -142,6 +169,13 @@ export class Tab2Page {
     }
   }
 
+  /**
+@function eliminarArchivo
+@description Elimina un archivo de una materia tanto localmente como en Firestore.
+@param { Materia } materia Materia que contiene el archivo.
+@param { object } archivo Objeto con los datos del archivo a eliminar.
+@return { Promise<void> } Retorna una promesa al completar la eliminación.
+*/
   async eliminarArchivo(materia: Materia, archivo: { url: string, nombre: string }) {
 
     await this.spinner.run(async () => {
@@ -156,6 +190,11 @@ export class Tab2Page {
     }, 'Eliminando archivo...');
   }
 
+  /**
+@function agregarMateria
+@description Crea una nueva materia en Firestore con valores predeterminados y la agrega a la lista local.
+@return { Promise<void> } Retorna una promesa cuando la nueva materia ha sido creada.
+*/
   async agregarMateria() {
     if (!this.user) return;
 
@@ -191,15 +230,30 @@ export class Tab2Page {
     this.materias.push(nuevaMateria);
   }
 
+  /**
+@function toggleExpandirTodos
+@description Expande o colapsa todas las materias simultáneamente.
+*/
   toggleExpandirTodos() {
     this.todasExpandidas = !this.todasExpandidas;
     this.materias.forEach(m => m.expandida = this.todasExpandidas);
   }
 
+  /**
+@function toggleExpandir
+@description Alterna la expansión individual de una materia para mostrar u ocultar su contenido.
+@param { Materia } materia Materia seleccionada.*/
+
   toggleExpandir(materia: Materia) {
     materia.expandida = !materia.expandida;
   }
 
+  /**
+@function agregarTitulo
+@description Agrega un nuevo título a la materia a partir del valor ingresado en el campo de texto.
+@param { Materia } materia Materia a la que se agregará el título.
+@param { IonInput } nuevoTituloInput Campo de entrada donde el usuario escribe el título.
+*/
   agregarTitulo(materia: Materia, nuevoTituloInput: IonInput) {
     nuevoTituloInput.getInputElement().then(inputEl => {
       const titulo = inputEl.value?.trim();
@@ -211,27 +265,51 @@ export class Tab2Page {
     });
   }
 
+  /**
+@function editarDescripcion
+@description Permite editar la descripción de una materia.
+@param { Materia } materia Materia cuya descripción se editará.*/
+
   editarDescripcion(materia: Materia) {
     materia.editandoDescripcion = true;
     materia.descripcionTemp = materia.descripcion || '';
   }
 
+  /**
+@function guardarDescripcion
+@description Guarda los cambios realizados en la descripción de la materia y actualiza Firestore.
+@param { Materia } materia Materia cuya descripción fue modificada.*/
   guardarDescripcion(materia: Materia) {
     materia.descripcion = materia.descripcionTemp || '';
     materia.editandoDescripcion = false;
     this.guardarMaterias();
   }
 
+  /**
+@function toggleFavorito
+@description Marca o desmarca una materia como favorita.
+@param { Materia } materia Materia que se desea marcar o desmarcar como favorita.*/
   toggleFavorito(materia: Materia) {
     materia.favorito = !materia.favorito;
     this.guardarMaterias();
   }
 
+  /**
+@function eliminarTitulo
+@description Elimina un título de la lista de títulos de una materia.
+@param { Materia } materia Materia de la cual se eliminará el título.
+@param { number } index Índice del título a eliminar.*/
   eliminarTitulo(materia: Materia, index: number) {
     materia.titulos.splice(index, 1);
     this.guardarMaterias();
   }
 
+  /**
+@function editarMateria
+@description Permite editar el nombre de una materia a través de un cuadro de diálogo.
+@param { Materia } materia Materia cuyo nombre se va a modificar.
+@return { Promise<void> } Retorna una promesa cuando finaliza la edición.
+*/
   async editarMateria(materia: Materia) {
     const alert = await this.alertCtrl.create({
       header: 'Editar nombre de la materia',
@@ -240,7 +318,7 @@ export class Tab2Page {
           name: 'nombre',
           type: 'text',
           value: materia.nombre,
-          placeholder: 'Nuevo nombre'
+          placeholder: ''
         }
       ],
       buttons: [
@@ -261,6 +339,12 @@ export class Tab2Page {
     await alert.present();
   }
 
+  /**
+@function eliminarMateria
+@description Muestra una alerta de confirmación y elimina la materia seleccionada si el usuario acepta.
+@param { Materia } materia Materia que se desea eliminar.
+@return { Promise<void> } Retorna una promesa cuando la materia ha sido eliminada.
+*/
   async eliminarMateria(materia: Materia) {
     if (!this.user) return;
 
@@ -301,6 +385,10 @@ export class Tab2Page {
 
     await alert.present();
   }
+/**
+@function cambiarFotoMateria
+@description Permite cambiar la imagen de una materia, subiendo una imagen desde el dispositivo.
+@param { Materia } materia Materia a la que se le cambiará la foto.*/
 
   cambiarFotoMateria(materia: Materia) {
     if (Capacitor.getPlatform() === 'web') {
@@ -310,6 +398,12 @@ export class Tab2Page {
     }
   }
 
+  /**
+@function cambiarFotoMateriaMovil
+@description Abre la galería en dispositivos móviles para seleccionar una nueva foto de materia.
+@param { Materia } materia Materia a la que se le cambiará la imagen.
+@return { Promise<void> } Retorna una promesa cuando la imagen ha sido seleccionada y guardada.
+*/
   async cambiarFotoMateriaMovil(materia: Materia) {
     try {
       const image = await Camera.getPhoto({
@@ -325,6 +419,12 @@ export class Tab2Page {
     }
   }
 
+  /**
+@function onFileSelected
+@description Carga y asigna una imagen seleccionada desde el navegador a la materia.
+@param { any } event Evento del input file.
+@param { Materia } materia Materia a la que se le asignará la imagen.*/
+
   onFileSelected(event: any, materia: Materia) {
     const file = event.target.files[0];
     if (!file) return;
@@ -337,11 +437,21 @@ export class Tab2Page {
     reader.readAsDataURL(file);
   }
 
+  /**
+@function eliminarFoto
+@description Elimina la foto subida por el usuario.
+@param { Materia } materia Materia a la que se le eliminará la foto personalizada.*/
   eliminarFoto(materia: Materia) {
     materia.imagen = 'assets/default.png';
     this.guardarMaterias();
   }
 
+  /**
+@function descargarMateria
+@description Descarga todos los archivos de una materia en formato ZIP.
+@param { Materia } materia Materia cuyos archivos se desean descargar.
+@return { Promise<void> } Retorna una promesa cuando la descarga ha finalizado.
+*/
   async descargarMateria(materia: Materia) {
     if (!materia.archivos || materia.archivos.length === 0) {
       const alert = await this.alertCtrl.create({
@@ -352,11 +462,8 @@ export class Tab2Page {
       await alert.present();
       return;
     }
-
     const zip = new JSZip();
     const folder = zip.folder(materia.nombre);
-
-
 
     try {
       for (const archivo of materia.archivos) {
@@ -385,6 +492,10 @@ export class Tab2Page {
     }
   }
 
+  /**
+@function guardarMaterias
+@description Guarda todas las materias en Firestore, actualizando sus cambios locales.
+@return { Promise<void> } Retorna una promesa cuando las materias han sido guardadas correctamente.*/
   async guardarMaterias() {
     const user = getAuth().currentUser;
     if (!user) return;
@@ -400,10 +511,17 @@ export class Tab2Page {
     console.log('Materias guardadas correctamente.');
   }
 
+  /**
+@function initPublicaStr
+@description Inicializa el valor en texto de la propiedad “publica” para todas las materias.*/
   initPublicaStr() {
     this.materias.forEach(m => m.publicaStr = m.publica ? 'true' : 'false');
   }
 
+  /**
+@function abrirSelectorFoto
+@description Abre el selector de archivos para elegir una nueva foto para la materia.
+@param { Materia } materia Materia que recibirá la nueva imagen.*/
   abrirSelectorFoto(materia: Materia) {
     const inputEl = document.getElementById('file-' + materia.id) as HTMLInputElement;
     if (inputEl) {
@@ -411,6 +529,13 @@ export class Tab2Page {
     }
   }
 
+  /**
+@function onCambioPublica
+@description Cambia el estado público o privado de una materia y lo guarda en Firestore.
+@param { any } materia Objeto de la materia a actualizar.
+@param { any } event Evento con el valor del cambio.
+@return { Promise<void> } Retorna una promesa cuando se actualiza el estado en Firestore.
+*/
   async onCambioPublica(materia: any, event: any) {
     // Convertimos string a boolean
     materia.publica = event.detail.value === 'true';
@@ -424,8 +549,12 @@ export class Tab2Page {
     }
   }
 
-  
 
+/**
+@function cargarMaterias
+@description Carga todas las materias del usuario actual desde Firestore y las guarda en el arreglo local.
+@return { Promise<void> } Retorna una promesa cuando las materias se han cargado correctamente.
+*/
   async cargarMaterias() {
     const user = getAuth().currentUser;
     if (!user) return;
@@ -436,7 +565,7 @@ export class Tab2Page {
         const snapshot = await getDocs(materiasRef);
         this.materias = snapshot.docs.map(d => {
           const materia = { id: d.id, ...d.data() } as Materia;
-          materia.expandida = false; 
+          materia.expandida = false;
           return materia;
         });
       } catch (error) {
