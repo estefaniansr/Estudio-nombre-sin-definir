@@ -48,13 +48,13 @@ export class RegistroPage {
     this.repPasswordVisible = !this.repPasswordVisible;
   }
 
-    /**
-   * @function mostrarAlert
-   * @description Muestra una alerta con un mensaje.
-   * @param { string } header El título de la alerta.
-   * @param { string } message El mensaje que se muestra en la alerta.
-   * @return { Promise<void> } Retorna una promesa que se resuelve cuando la alerta ha sido presentada.
-   */
+  /**
+ * @function mostrarAlert
+ * @description Muestra una alerta con un mensaje.
+ * @param { string } header El título de la alerta.
+ * @param { string } message El mensaje que se muestra en la alerta.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando la alerta ha sido presentada.
+ */
   async mostrarAlert(header: string, message: string) {
     const alert = await this.alertCtrl.create({
       header,
@@ -64,6 +64,12 @@ export class RegistroPage {
     await alert.present();
   }
 
+  /**
+   * @function registrarUsuario
+   * @description Registra un nuevo usuario en Firebase Authentication, valida los campos,
+   * guarda sus datos en Firestore, envía un correo de verificación y cierra la sesión.
+   * @return { Promise<void> } Retorna una promesa que se resuelve cuando el proceso de registro finaliza.
+   */
   async registrarUsuario() {
     if (!this.email || !this.password || !this.repPassword || !this.nombre || !this.fecha) {
       await this.mostrarAlert('Error', 'Completa todos los campos');
@@ -115,6 +121,11 @@ export class RegistroPage {
 
     }, 'Registrando usuario...');
   }
+
+  /**
+ * @function irLogin
+ * @description Redirige al usuario a la pantalla de inicio de sesión.
+ */
 
   irLogin() {
     this.router.navigate(['/tabs/tab1']);

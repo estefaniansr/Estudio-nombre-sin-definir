@@ -45,25 +45,49 @@ export class AjustesPage {
     });
   }
 
+
+  /**
+ * @function toggleSeccion
+ * @description Abre o cierra una sección del menú de ajustes.
+ * @param { 'seguridad' | 'idioma' | 'tema' | 'soporte' } seccion - La sección que se desea alternar.
+ */
   toggleSeccion(seccion: 'seguridad' | 'idioma' | 'tema' | 'soporte') {
     this.seccionActiva = this.seccionActiva === seccion ? null : seccion;
     if (seccion !== 'seguridad') this.editarPerfilAbierto = false;
   }
 
+
+  /**
+   * @function toggleEditarPerfil
+   * @description Alterna la visibilidad del formulario de edición del perfil del usuario.
+   */
   toggleEditarPerfil() {
     this.editarPerfilAbierto = !this.editarPerfilAbierto;
   }
 
+  /**
+ * @function mostrarToast
+ * @description Muestra un mensaje flotante en pantalla durante 4 segundos.
+ * @param { string } message - El mensaje que se mostrará en el toast.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando el toast se muestra.
+ */
   async mostrarToast(message: string) {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 4000,
+      duration: 4000, // 4 segundos
       position: 'top',
       color: 'primary'
     });
     toast.present();
   }
 
+  /**
+ * @function mostrarAlert
+ * @description Muestra una alerta con título y mensaje.
+ * @param { string } header - El título de la alerta.
+ * @param { string } message - El contenido del mensaje que se mostrará.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando la alerta es presentada.
+ */
   async mostrarAlert(header: string, message: string) {
     const alert = await this.alertCtrl.create({
       header,
@@ -73,6 +97,12 @@ export class AjustesPage {
     await alert.present();
   }
 
+  /**
+ * @function cargarDatosUsuario
+ * @description Carga los datos del usuario desde Firestore.
+ * @param { string } uid - El identificador único del usuario autenticado.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando los datos se cargan correctamente.
+ */
   async cargarDatosUsuario(uid: string) {
     await this.spinner.run(async () => {
       try {
@@ -90,17 +120,26 @@ export class AjustesPage {
     }, 'Cargando datos del usuario...');
   }
 
+  /**
+ * @function volverPerfil
+ * @description Redirige al usuario a la página principal del perfil.
+ */
   volverPerfil() {
     this.router.navigate(['/tabs/tab1']);
   }
 
+  /**
+   * @function guardarPerfil
+   * @description Guarda los cambios del perfil del usuario (nombre, fecha, email) en Firestore y actualiza su perfil de Firebase.
+   * @return { Promise<void> } Retorna una promesa que se resuelve cuando la actualización se completa.
+   */
   async guardarPerfil() {
     if (!this.nombre || !this.fecha || !this.user) {
       this.mostrarToast('Completa todos los campos');
       return;
     }
 
-    const user = this.user; 
+    const user = this.user;
 
     await this.spinner.run(async () => {
       try {
@@ -121,6 +160,11 @@ export class AjustesPage {
     }, 'Guardando cambios...');
   }
 
+  /**
+ * @function restablecerPassword
+ * @description Envía un correo electrónico al usuario para restablecer su contraseña.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando el correo se envía o si ocurre un error.
+ */
   async restablecerPassword() {
     if (!this.user?.email) {
       await this.mostrarAlert('Error', 'No se encontró tu correo registrado');
@@ -143,6 +187,11 @@ export class AjustesPage {
     }, 'Enviando correo de restablecimiento...');
   }
 
+  /**
+ * @function logout
+ * @description Cierra la sesión del usuario actual y lo redirige al Login.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando el cierre de sesión finaliza.
+ */
   async logout() {
     await this.spinner.run(async () => {
       try {
@@ -160,6 +209,11 @@ export class AjustesPage {
     }, 'Cerrando sesión...');
   }
 
+  /**
+ * @function eliminarCuenta
+ * @description Muestra una alerta de confirmación y elimina la cuenta del usuario tanto de Firebase Authentication como de Firestore.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando la cuenta es eliminada o si ocurre un error.
+ */
   async eliminarCuenta() {
     if (!this.user) return;
 
@@ -194,6 +248,10 @@ export class AjustesPage {
     await alert.present();
   }
 
+  /**
+ * @function contactarSoporte
+ * @description Abre Gmail en una nueva pestaña con un correo prellenado para contactar al soporte técnico de la aplicación.
+ */
   contactarSoporte() {
     const email = 'desarollomoviltp@gmail.com';
     const subject = encodeURIComponent('Soporte App');
