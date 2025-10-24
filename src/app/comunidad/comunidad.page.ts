@@ -27,6 +27,12 @@ export class ComunidadPage implements OnInit {
 
   constructor(private spinner: SpinnerService, private alertCtrl: AlertController, private actionSheetCtrl: ActionSheetController) { }
 
+
+  /**
+ * @function ngOnInit
+ * @description Se ejecuta al iniciar el componente. Espera al usuario autenticado y carga las materias de la comunidad.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando las materias se cargan completamente.
+ */
   async ngOnInit() {
     // Esperar al usuario actual
     this.currentUserEmail = await new Promise<string | null>(resolve => {
@@ -39,6 +45,11 @@ export class ComunidadPage implements OnInit {
     }, 'Cargando materias de la comunidad...');
   }
 
+  /**
+ * @function recargarMaterias
+ * @description Vuelve a cargar las materias de la comunidad desde la base de datos.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando la recarga finaliza.
+ */
   async recargarMaterias() {
     await this.spinner.run(async () => {
       await this.cargarMaterias();
@@ -46,6 +57,11 @@ export class ComunidadPage implements OnInit {
 
   }
 
+  /**
+* @function cargarMaterias
+* @description Obtiene todas las materias públicas de todos los usuarios desde Firestore.
+* @return { Promise<void> } Retorna una promesa que se resuelve cuando todas las materias se cargaron correctamente.
+*/
   async cargarMaterias() {
     try {
       this.materias = [];
@@ -86,6 +102,11 @@ export class ComunidadPage implements OnInit {
     }
   }
 
+  /**
+ * @function abrirFiltro
+ * @description Abre un menú de opciones para filtrar las materias por nombre o por creador.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando el ActionSheet es presentado.
+ */
   async abrirFiltro() {
     const buttons: any[] = [
       {
@@ -98,7 +119,6 @@ export class ComunidadPage implements OnInit {
       {
         text: 'Filtrar por creador',
         handler: async () => {
-          // Abrimos un alert con radios (ya lo tenías funcionando)
           const alert = await this.alertCtrl.create({
             header: 'Seleccionar creador',
             inputs: this.creadores.map(c => ({
@@ -137,11 +157,23 @@ export class ComunidadPage implements OnInit {
     await actionSheet.present();
   }
 
+  /**
+ * @function esPropia
+ * @description Verifica si una materia fue creada por el usuario actual.
+ * @param { Materia } materia - Objeto de tipo Materia que se desea verificar.
+ * @return { boolean } Retorna true si la materia pertenece al usuario actual, false en caso contrario.
+ */
   esPropia(materia: Materia): boolean {
     if (!materia.archivos) return false;
     return materia.archivos.some(a => a.subidoPor === this.currentUserEmail);
   }
 
+  /**
+ * @function getFileExtension
+ * @description Obtiene la extensión de un archivo a partir de su URL o tipo MIME.
+ * @param { string } url - URL del archivo del cual se desea obtener la extensión.
+ * @return { string } Retorna la extensión del archivo o 'bin' si no se puede determinar.
+ */
   getFileExtension(url: string): string {
     try {
       // 1. Intentar obtener la extensión del nombre real del archivo si la URL lo contiene
@@ -167,6 +199,12 @@ export class ComunidadPage implements OnInit {
     }
   }
 
+  /**
+ * @function descargarMateria
+ * @description Descarga todos los archivos de una materia en formato ZIP.
+ * @param { Materia } materia - La materia cuyos archivos se desean descargar.
+ * @return { Promise<void> } Retorna una promesa que se resuelve cuando la descarga se completa o se muestra un error.
+ */
   async descargarMateria(materia: Materia) {
     if (!materia.archivos || materia.archivos.length === 0) {
       const alert = await this.alertCtrl.create({
