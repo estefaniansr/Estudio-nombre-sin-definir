@@ -8,7 +8,7 @@ export class FilestackService {
   private client: any;
 
   constructor() {
-    this.client = filestack.init('ARiMNESXtThyfmSJpoKgmz');
+    this.client = filestack.init('AxL4duZu3RaaRBCWWA8WPz');
   }
 
     /**
