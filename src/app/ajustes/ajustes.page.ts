@@ -74,7 +74,7 @@ export class AjustesPage {
   async mostrarToast(message: string) {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 4000, // 4 segundos
+      duration: 4000, 
       position: 'top',
       color: 'primary'
     });
@@ -171,7 +171,7 @@ export class AjustesPage {
       return;
     }
 
-    const email = this.user.email; // ✅ ya validado arriba
+    const email = this.user.email; 
 
     await this.spinner.run(async () => {
       try {
@@ -217,7 +217,7 @@ export class AjustesPage {
   async eliminarCuenta() {
     if (!this.user) return;
 
-    const user = this.user; // ✅ guardamos referencia no nula
+    const user = this.user; 
 
     const alert = await this.alertCtrl.create({
       header: 'Confirmar eliminación',

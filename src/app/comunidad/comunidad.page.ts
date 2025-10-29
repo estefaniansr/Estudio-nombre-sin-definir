@@ -34,7 +34,6 @@ export class ComunidadPage implements OnInit {
  * @return { Promise<void> } Retorna una promesa que se resuelve cuando las materias se cargan completamente.
  */
   async ngOnInit() {
-    // Esperar al usuario actual
     this.currentUserEmail = await new Promise<string | null>(resolve => {
       onAuthStateChanged(auth, user => resolve(user?.email || null));
     });
@@ -68,17 +67,16 @@ export class ComunidadPage implements OnInit {
 
       const usuariosSnapshot = await getDocs(collection(db, 'usuarios'));
 
-      // Traer las materias de todos los usuarios en paralelo
       const promesas = usuariosSnapshot.docs.map(async userDoc => {
-        const materiasRef = collection(db, 'usuarios', userDoc.id, 'materias');
-        const materiasSnapshot = await getDocs(materiasRef);
+      const materiasRef = collection(db, 'usuarios', userDoc.id, 'materias');
+      const materiasSnapshot = await getDocs(materiasRef);
 
-        return materiasSnapshot.docs
-          .map(m => {
-            const data = m.data() as Materia;
-            return { ...data, id: m.id, publica: !!data.publica, ownerEmail: userDoc.data()['email'], ownerId: userDoc.id }; // fuerza booleano
-          })
-          .filter(materia => materia.publica); // solo públicas
+      return materiasSnapshot.docs
+        .map(m => {
+          const data = m.data() as Materia;
+          return { ...data, id: m.id, publica: !!data.publica, ownerEmail: userDoc.data()['email'], ownerId: userDoc.id };
+        })
+        .filter(materia => materia.publica); 
       });
 
       const todasMaterias = await Promise.all(promesas);
@@ -176,15 +174,13 @@ export class ComunidadPage implements OnInit {
  */
   getFileExtension(url: string): string {
     try {
-      // 1. Intentar obtener la extensión del nombre real del archivo si la URL lo contiene
       const urlObj = new URL(url);
-      const pathname = urlObj.pathname; // ejemplo: /files/abc123/documento.pdf
+      const pathname = urlObj.pathname; 
       const parts = pathname.split('.');
       if (parts.length > 1) {
         return parts.pop()!.toLowerCase();
       }
 
-      // 2. Si no tiene extensión, intentar deducirla por tipo MIME
       const mimeTypes: Record<string, string> = {
         'image/jpeg': 'jpg',
         'image/png': 'png',
@@ -193,7 +189,7 @@ export class ComunidadPage implements OnInit {
         'application/zip': 'zip',
       };
 
-      return 'bin'; // valor por defecto si no se puede detectar
+      return 'bin'; 
     } catch {
       return 'bin';
     }
@@ -226,7 +222,6 @@ export class ComunidadPage implements OnInit {
         const response = await fetch(archivo.url);
         const blob = await response.blob();
 
-        // Aseguramos que tenga extensión válida
         const extension = archivo.extension || this.getFileExtension(archivo.url);
         const nombreConExtension = archivo.nombre.endsWith(`.${extension}`)
           ? archivo.nombre

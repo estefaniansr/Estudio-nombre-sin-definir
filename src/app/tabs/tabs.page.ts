@@ -18,13 +18,11 @@ export class TabsPage {
   user: User | null = null;
 
   constructor(private router: Router) {
-    // Detecta usuario logueado
     onAuthStateChanged(auth, (u) => {
       this.user = u;
       this.updateTabBar(this.router.url);
     });
 
-    // Detecta cambios de ruta
     this.router.events.pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.updateTabBar(event.url);
@@ -37,11 +35,10 @@ export class TabsPage {
 @param { string } url La URL de la ruta actual, utilizada para determinar si debemos mostrar la barra de pestañas.*/
 
   private updateTabBar(url: string) {
-    // Si estamos en Tab1, solo mostrar barra si hay usuario
     if (url.endsWith('/tab1')) {
       this.showTabBar = !!this.user;
     } else {
-      this.showTabBar = true; // otros tabs siempre muestran barra
+      this.showTabBar = true; 
     }
   }
 }

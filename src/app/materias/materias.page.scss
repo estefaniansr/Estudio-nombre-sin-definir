@@ -6,7 +6,6 @@
   --fondo: #0b1215;
 }
 
-/* ===== Header ===== */
 ion-header {
   text-align: center;
   font-weight: 600;
@@ -15,13 +14,10 @@ ion-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* == expandir === */
 .expandir-container {
   position: relative;
   right: 30px;
 }
-
-/* ===== Botón agregar ===== */
 
 .agregar-materias {
   position: fixed;
@@ -40,8 +36,6 @@ ion-header {
 .mas-icon {
   font-size: 28px;
 }
-
-/* ====== btn de descargar ====== */
 
 .icon-down {
   color: #8000ff;
@@ -70,11 +64,8 @@ ion-header {
 
 .icon-down {
   color: #8000ff;
-  /* ya lo tenías, queda consistente */
 }
 
-
-/* ===== Contenedor de materias ===== */
 .materias-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -99,9 +90,6 @@ ion-item {
   margin: 0;
 }
 
-
-/* ===== Tarjeta de materia ===== */
-
 ion-card {
   background: #141a1e;
   border-radius: 16px;
@@ -120,7 +108,6 @@ ion-card {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ===== Botones sobre la imagen ===== */
 .btn-img {
   position: absolute;
   top: 3px;
@@ -128,7 +115,6 @@ ion-card {
   left: 12px;
   display: flex;
   justify-content: space-between;
-  /* uno a la izq y otro a la der */
   align-items: center;
   z-index: 5;
 }
@@ -141,7 +127,6 @@ ion-card {
   justify-content: center;
 }
 
-/* ===== Header de la tarjeta ===== */
 ion-card-header {
   display: flex;
   align-items: center;
@@ -155,8 +140,6 @@ ion-card-title {
   font-weight: 600;
 }
 
-
-/* ===== Acciones ===== */
 .acciones {
   display: flex;
 
@@ -192,8 +175,6 @@ ion-card-title {
   right: 10px;
 }
 
-
-/* ===== Expandido ===== */
 ion-card-content {
   color: var(--gris-suave);
   font-size: 14px;
@@ -211,16 +192,11 @@ ion-card-content {
   text-decoration: none;
 }
 
-/* ===== Lista de archivos y títulos ===== */
-
 ion-item {
   --background: transparent;
   --color: var(--blanco);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-
-
-/* ===== subir archivo ====== */
 
 .subirArchivo {
   border: 1px solid #8000ff;
@@ -232,19 +208,13 @@ ion-item {
   margin-top: 8px;
 }
 
-/* ==== favoritos ======== */
-
 .custom-segment {
   --background: #101518;
-  /* fondo del contenedor */
   --border-radius: 12px;
   --indicator-background: #8000ff;
-  /* fondo del botón activo */
   --indicator-border-radius: 12px;
   --color-checked: #fff;
-  /* texto activo */
   --color: #8000ff;
-  /* texto inactivo */
   margin: 1rem auto;
   display: flex;
 }
@@ -255,20 +225,16 @@ ion-item {
   font-weight: 500;
 }
 
-/*===== Publica o privada ========*/
-
 .PubPriv {
   --indicator-color: transparent;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 4px;
-  /* controla la distancia entre los íconos */
   border: 1px solid #8000ff;
   border-radius: 25px;
   overflow: hidden;
   width: 90px;
-  /* más compacto */
   height: 34px;
   margin: 8px auto;
   background: #101518;
@@ -290,7 +256,6 @@ ion-item {
   align-items: center;
   padding: 0;
   min-width: 40px;
-  /* más angosto cada botón */
 }
 
 .PubPriv ion-icon {
@@ -309,12 +274,10 @@ ion-item {
   color: #8000ff;
 }
 
-/* ===== sliding ===== */
 ion-item-sliding.activated {
   background: linear-gradient(to right, #4caf50 50%, #f44336 50%);
 }
 
-/* ==== expandir todas ==== */
 .acciones-todas {
   position: fixed;
   bottom: 90px;

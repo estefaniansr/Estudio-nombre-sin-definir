@@ -6,7 +6,6 @@
   --fondo: #0b1215;
 }
 
-/* ====== HEADER ===== */
 ion-header {
   text-align: center;
   background: var(--fondo);
@@ -17,10 +16,6 @@ ion-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-
-/* ======== VISTA REGISTRO ======== */
-
-/* ====== CUERPO ====== */
 .registro-content {
   --background: var(--fondo);
   display: flex;
@@ -33,7 +28,6 @@ ion-header {
   padding: 16px;
 }
 
-/* === LOGIN CONTAINER === */
 .registro-container {
   width: 100%;
   max-width: 380px;
@@ -67,7 +61,6 @@ ion-header {
   color: rgba(255, 255, 252, 0.7);
 }
 
-/* === FORMULARIO === */
 .credencial {
   display: flex;
   flex-direction: column;
@@ -98,9 +91,6 @@ ion-header {
   padding: 5px;
 }
 
-
-/* === BOTÓN LOGIN === */
-
 .btn-registrarse {
   padding: 5px;
   border-radius: 14px;
@@ -114,20 +104,14 @@ ion-header {
 .btn-registrarse:hover {
   background: #4d0199;
   border-color: var(--violeta);
-  /* efecto hover */
   transform: translateY(-1px);
 }
-
-
-/* === terminos === */
 
 .terminos {
   font-size: 13px;
   color: rgba(255, 255, 252, 0.7);
 }
 
-
-/* ======== ya cuenta ========== */
 .Cuenta-btn {
   display: flex;
   justify-content: center;

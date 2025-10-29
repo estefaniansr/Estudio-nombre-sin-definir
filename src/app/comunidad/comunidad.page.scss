@@ -6,7 +6,6 @@
   --fondo: #0b1215;
 }
 
-/* ===== Header ===== */
 ion-header {
   text-align: center;
   font-weight: 600;
@@ -15,7 +14,6 @@ ion-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ===== Contenedor de materias ===== */
 .materias-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -23,7 +21,6 @@ ion-header {
   margin-top: 20px;
 }
 
-/* ===== Tarjeta de materia ===== */
 ion-card {
   background: #141a1e;
   border-radius: 16px;
@@ -32,7 +29,6 @@ ion-card {
   position: relative;
 }
 
-/* Imagen de materia */
 .materia-img {
   width: 100%;
   height: 180px;
@@ -40,7 +36,6 @@ ion-card {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Botones sobre la imagen */
 .btn-img {
   position: absolute;
   top: 3px;
@@ -67,7 +62,6 @@ ion-card {
   color: var(--violeta);
 }
 
-/* ===== Header de la tarjeta ===== */
 ion-card-header {
   display: flex;
   align-items: center;
@@ -81,7 +75,6 @@ ion-card-title {
   font-weight: 600;
 }
 
-/* ===== Card Content ===== */
 ion-card-content {
   color: var(--gris-suave);
   font-size: 14px;
@@ -91,7 +84,6 @@ ion-card-content {
   border-radius: 0 0 16px 16px;
 }
 
-/* Descripción y archivos */
 .desc {
   background: #101518;
   border-radius: 8px;
@@ -107,7 +99,6 @@ ion-item {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Botón de descargar */
 .down {
   display: flex;         
   justify-content: center;
@@ -119,7 +110,6 @@ ion-item {
   color: #8000ff;             
 }
 
-/* Botón agregar materia */
 .agregar-materias {
   position: fixed;
   bottom: 20px;
@@ -138,18 +128,13 @@ ion-item {
   font-size: 28px;
 }
 
-
-/* === recargar materias === */
-
 .recargarMaterias {
-  position: fixed;
-  right: -10px;
-  top:60px;
+  position: absolute;
   background: transparent !important;
-
+  
 }
 
-.recargarMaterias ion-icon {
+.recargarMaterias ion-icon, .filtrar ion-icon {
   color: #8000ff;
   font-size: 25px;
 }

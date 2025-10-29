@@ -39,12 +39,10 @@
           <img [src]="materia.imagen" alt="Foto de materia" class="materia-img">
 
           <div class="btn-img">
-            <!-- Botón para cambiar imagen -->
             <ion-button fill="clear" color="primary" (click)="abrirSelectorFoto(materia)">
               <ion-icon name="image-outline"></ion-icon>
             </ion-button>
 
-            <!-- Botón para eliminar imagen -->
             <ion-button fill="clear" color="danger" (click)="eliminarFoto(materia)" class="btn-eliminar-foto">
               <ion-icon name="trash-bin-outline"></ion-icon>
             </ion-button>
@@ -56,9 +54,7 @@
           <ion-card-header>
             <ion-card-title>{{ materia.nombre }}</ion-card-title>
 
-            <!-- Contenedor para los botones -->
             <div class="acciones">
-              <!-- Botón abrir/cerrar -->
 
               <div class="expandir-container">
                 <ion-button fill="clear" size="small" (click)="toggleExpandir(materia)" class="expandir">
@@ -84,7 +80,6 @@
               </ion-button>
             </div>
 
-            <!-- Si ya guardó la descripción -->
             <ng-template #descripcionFija>
               <div class="desc">
                 {{ materia.descripcion || '' }}
@@ -104,26 +99,21 @@
               </ion-item>
             </ion-list>
 
-            <!-- NUEVO: Botón para subir archivos -->
             <ion-button expand="full" color="primary" (click)="subirArchivo(materia)" fill="clear" class="subirArchivo">
               <ion-icon name="cloud-upload-outline"></ion-icon>
             </ion-button>
 
-            <!-- NUEVO: Lista de archivos subidos -->
             <ion-list *ngIf="materia.archivos?.length">
               <ion-item *ngFor="let archivo of materia.archivos">
                 <ion-label>
-                  <!-- Mostramos el nombre y el link -->
                   <a [href]="archivo.url" target="_blank">{{ archivo.nombre }}</a>
                 </ion-label>
-                <!-- Botón para eliminar el archivo -->
                 <ion-button fill="clear" color="danger" (click)="eliminarArchivo(materia, archivo)">
                   <ion-icon name="trash-bin-outline"></ion-icon>
                 </ion-button>
               </ion-item>
             </ion-list>
 
-            <!--Publica o privada-->
             <ion-segment [(ngModel)]="materia.publicaStr" (ionChange)="onCambioPublica(materia, $event)"
               class="PubPriv">
               <ion-segment-button [value]="'false'">

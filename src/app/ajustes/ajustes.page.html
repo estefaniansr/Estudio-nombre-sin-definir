@@ -11,7 +11,6 @@
 
 <ion-content class="ion-padding ajustes-content">
 
-  <!-- Lista de categorías -->
   <ion-list>
     <ion-item button (click)="toggleSeccion('seguridad')">
       <ion-icon slot="start" name="key-outline"></ion-icon>
@@ -28,7 +27,6 @@
     </ion-item>
   </ion-list>
 
-  <!-- Sección Seguridad -->
   <ion-card *ngIf="seccionActiva==='seguridad'" class="editar-Perfil">
     <ion-item button (click)="restablecerPassword()">
       <ion-icon slot="start" name="key-outline"></ion-icon>
@@ -72,8 +70,6 @@
     </ion-card>
   </ion-card>
 
-
-  <!-- Sección Soporte -->
   <ion-card *ngIf="seccionActiva==='soporte'" class="editar-Perfil">
     <ion-item button (click)="contactarSoporte()">
       <ion-label>Enviar email al soporte</ion-label>
