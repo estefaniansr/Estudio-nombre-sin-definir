@@ -14,12 +14,10 @@
       <ion-card-content>
         <p>{{ materia.descripcion }}</p>
 
-        <!-- Titulos -->
         <ion-list>
           <ion-item *ngFor="let titulo of materia.titulos">{{ titulo }}</ion-item>
         </ion-list>
 
-        <!-- Archivos -->
         <ion-list *ngIf="materia.archivos?.length">
           <ion-list-header>
           </ion-list-header>

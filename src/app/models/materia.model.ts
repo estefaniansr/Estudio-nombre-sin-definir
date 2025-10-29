@@ -2,7 +2,7 @@ export interface Archivo {
   url: string;
   nombre: string;
   extension?: string;
-  subidoPor?: string;  // email
+  subidoPor?: string;  
   fechaSubida?: Date;
 }
 
@@ -16,7 +16,7 @@ export interface Materia {
   favorito: boolean;
   publica: boolean;
   publicaStr?: string;
-  archivos: Archivo[]; // URLs de archivos subidos a Filestack
+  archivos: Archivo[]; 
   editandoDescripcion?: boolean;
   descripcionTemp?: string;
   ownerEmail: string;

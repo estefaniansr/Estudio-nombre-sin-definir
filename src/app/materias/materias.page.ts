@@ -17,13 +17,13 @@ import { auth } from '../../firebase-config';
 
 
 @Component({
-  selector: 'app-tab2',
-  templateUrl: './tab2.page.html',
-  styleUrls: ['./tab2.page.scss'],
+  selector: 'app-materia',
+  templateUrl: './materias.page.html',
+  styleUrls: ['./materias.page.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule]
 })
-export class Tab2Page {
+export class MateriaPage {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   materias: Materia[] = [];
   user: any = null;
@@ -83,7 +83,6 @@ export class Tab2Page {
   async pedirPermisoAlmacenamiento(): Promise<boolean> {
     try {
       const result = await Filesystem.requestPermissions();
-      // Verificamos si tiene permiso
       if (result.publicStorage === 'granted') {
         return true;
       } else {
@@ -108,15 +107,12 @@ export class Tab2Page {
   */
   getFileExtension(url: string): string {
     try {
-      // 1. Intentar obtener la extensión del nombre real del archivo si la URL lo contiene
       const urlObj = new URL(url);
-      const pathname = urlObj.pathname; // ejemplo: /files/abc123/documento.pdf
+      const pathname = urlObj.pathname; 
       const parts = pathname.split('.');
       if (parts.length > 1) {
         return parts.pop()!.toLowerCase();
       }
-
-      // 2. Si no tiene extensión, intentar deducirla por tipo MIME
       const mimeTypes: Record<string, string> = {
         'image/jpeg': 'jpg',
         'image/png': 'png',
@@ -125,7 +121,7 @@ export class Tab2Page {
         'application/zip': 'zip',
       };
 
-      return 'bin'; // valor por defecto si no se puede detectar
+      return 'bin'; 
     } catch {
       return 'bin';
     }
@@ -182,7 +178,6 @@ export class Tab2Page {
       if (!this.user) return;
       materia.archivos = materia.archivos?.filter(a => a.url !== archivo.url);
 
-      // Actualizar en Firestore
       const docRef = doc(db, 'usuarios', this.user.uid, 'materias', materia.nombre);
       await setDoc(docRef, materia);
 
@@ -199,10 +194,10 @@ export class Tab2Page {
     if (!this.user) return;
 
     const materiasRef = collection(db, "usuarios", this.user.uid, "materias");
-    const nuevaRef = doc(materiasRef); // genera ID único
+    const nuevaRef = doc(materiasRef); 
 
     const nuevaMateria = {
-      id: nuevaRef.id, // mismo ID local y Firestore
+      id: nuevaRef.id, 
       nombre: 'Nueva Materia',
       descripcion: '',
       imagen: 'assets/default.png',
@@ -215,13 +210,13 @@ export class Tab2Page {
       dislikes: 0,
       likedBy: [],
       dislikedBy: [],
-      ownerEmail: this.currentUserEmail!,  // email del usuario actual
+      ownerEmail: this.currentUserEmail!,  
       ownerId: auth.currentUser?.uid!
     };
 
     await this.spinner.run(async () => {
       try {
-        await setDoc(nuevaRef, nuevaMateria); // crea el documento con ID correcto
+        await setDoc(nuevaRef, nuevaMateria); 
       } catch (err) {
         console.error('Error al crear materia:', err);
       }
@@ -348,7 +343,6 @@ export class Tab2Page {
   async eliminarMateria(materia: Materia) {
     if (!this.user) return;
 
-    // Primero preguntamos si está seguro
     const alert = await this.alertCtrl.create({
       header: 'Confirmar eliminación',
       message: `¿Estás seguro de que deseas eliminar la materia "${materia.nombre}"? Esta acción no se puede deshacer.`,
@@ -371,7 +365,6 @@ export class Tab2Page {
 
               await deleteDoc(doc(db, 'usuarios', this.user.uid, 'materias', materia.id));
 
-              // Actualizar el arreglo local para reflejar la UI
               this.materias = this.materias.filter(m => m.id !== materia.id);
 
               console.log(`Materia "${materia.nombre}" eliminada correctamente`);
@@ -417,7 +410,7 @@ export class Tab2Page {
     } catch (error) {
       console.log('No se seleccionó ninguna foto', error);
     }
-  }
+  } 
 
   /**
 @function onFileSelected
@@ -470,7 +463,6 @@ export class Tab2Page {
         const response = await fetch(archivo.url);
         const blob = await response.blob();
 
-        // Aseguramos que tenga extensión válida
         const extension = archivo.extension || this.getFileExtension(archivo.url);
         const nombreConExtension = archivo.nombre.endsWith(`.${extension}`)
           ? archivo.nombre
@@ -537,7 +529,6 @@ export class Tab2Page {
 @return { Promise<void> } Retorna una promesa cuando se actualiza el estado en Firestore.
 */
   async onCambioPublica(materia: any, event: any) {
-    // Convertimos string a boolean
     materia.publica = event.detail.value === 'true';
     materia.publicaStr = event.detail.value;
 

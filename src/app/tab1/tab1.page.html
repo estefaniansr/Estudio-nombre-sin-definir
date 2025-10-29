@@ -8,7 +8,6 @@
 
 <ion-content class="login-content">
 
-  <!-- VISTA LOGIN -->
   <div *ngIf="!user" class="login-container">
     <div class="logo-container">
       <div class="logo">
@@ -61,8 +60,6 @@
     </div>
   </div>
 
-
-  <!-- VISTA PERFIL -->
   <div *ngIf="user" class="perfil-container ion-padding">
     <ion-buttons slot="end">
       <ion-button (click)="irAjustes()" class="ajustes">
@@ -70,12 +67,13 @@
       </ion-button>
     </ion-buttons>
 
-
     <h2>Bienvenido, {{ user.displayName || 'Usuario' }}</h2>
 
-    <ion-avatar>
-      <img [src]="user.photoURL" alt="Foto de perfil" />
+    <ion-avatar (click)="cambiarFotoPerfil()" style="cursor: pointer;">
+      <img [src]="fotoPerfil || user.photoURL" alt="Foto de perfil"/>
     </ion-avatar>
+    <input #fileInputPerfil type="file" accept="image/*" style="display: none" 
+       (change)="onFileSelectedPerfil($event)" />
 
     <p><strong>Nombre:</strong> {{ nombre }}</p>
     <p><strong>Email:</strong> {{ user.email }}</p>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { Router } from '@angular/router';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
@@ -21,6 +21,8 @@ import {
 import { db, auth } from '../../firebase-config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { SpinnerService } from '../services/spinner.service';
+import { Capacitor } from '@capacitor/core';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-tab1',
@@ -30,6 +32,16 @@ import { SpinnerService } from '../services/spinner.service';
   imports: [IonicModule, CommonModule, FormsModule, HttpClientModule],
 })
 export class Tab1Page {
+
+ @ViewChild('fileInputPerfil') fileInputPerfil!: ElementRef; // ← Agrega esta línea
+  fotoPerfil: string | null = null;
+
+
+  eliminarFotoPerfil() {
+    this.fotoPerfil = null;
+    // También eliminar de Firebase si es necesario
+  }
+  
   user: User | null = null;
   nombre: string = '';
   fecha: string = '';
@@ -260,17 +272,14 @@ export class Tab1Page {
       const result = await signInWithCredential(auth, credential);
       this.user = result.user;
 
-      // Guardar o actualizar datos en Firestore
       await setDoc(doc(db, 'usuarios', this.user.uid), {
         nombre: this.user.displayName,
         fecha: '2025-01-01',
         email: this.user.email
       }, { merge: true });
 
-      // Actualizar displayName de Firebase si es necesario
       await updateProfile(this.user, { displayName: this.user.displayName });
 
-      // Cargar datos locales y navegar a tab2
       if (this.user) await this.cargarDatosUsuario(this.user.uid);
       console.log('Login con Google exitoso:', this.user);
       this.router.navigate(['/tabs/tab2']);
@@ -289,23 +298,19 @@ export class Tab1Page {
     const provider = new GithubAuthProvider();
 
     try {
-      // Redirige al navegador para autenticarse en GitHub
       await signInWithRedirect(auth, provider);
 
-      // Cuando el usuario regresa de GitHub, obtenemos el resultado
       const result = await getRedirectResult(auth);
-      if (!result) return; // Si todavía no hay resultado, salimos
+      if (!result) return; 
 
       this.user = result.user;
 
-      // Guardar o actualizar datos en Firestore
       await setDoc(doc(db, 'usuarios', this.user.uid), {
         nombre: this.user.displayName,
         fecha: '2025-01-01',
         email: this.user.email
       }, { merge: true });
 
-      // Actualizar displayName de Firebase
       await updateProfile(this.user, { displayName: this.user.displayName });
 
       if (this.user) await this.cargarDatosUsuario(this.user.uid);
@@ -350,4 +355,38 @@ export class Tab1Page {
   irRegistro() {
     this.router.navigate(['/registro']);
   }
+
+  cambiarFotoPerfil() {
+    if (Capacitor.getPlatform() === 'web') {
+      this.fileInputPerfil.nativeElement.click();
+    } else {
+      this.cambiarFotoPerfilMovil();
+    }
+  }
+
+  async cambiarFotoPerfilMovil() {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Photos
+      });
+      this.fotoPerfil = image.dataUrl!;
+    } catch (error) {
+      console.log('No se seleccionó ninguna foto', error);
+    }
+  }
+
+  onFileSelectedPerfil(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.fotoPerfil = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 }
+

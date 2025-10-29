@@ -3,8 +3,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
-import { Tab2PageRoutingModule } from './tab2-routing.module';
-import { Tab2Page } from './tab2.page';
+import { MateriaPage } from './materias.page';
+import { MateriaPageRoutingModule } from './materias-routing.module';
 
 @NgModule({
   imports: [
@@ -12,8 +12,8 @@ import { Tab2Page } from './tab2.page';
     CommonModule,
     FormsModule,
     ExploreContainerComponentModule,
-    Tab2PageRoutingModule,
-    Tab2Page  // <-- Importamos el standalone component, no declarations
+    MateriaPageRoutingModule,
+    MateriaPage  
   ]
 })
-export class Tab2PageModule {}
+export class MateriaPageModule {}
