@@ -113,9 +113,22 @@ export class RegistroPage {
         );
 
       } catch (error: any) {
-        console.error(error);
-        await this.mostrarAlert('Error', error.message || 'Error al registrarse');
-      }
+  let mensaje = "Error al registrarse";
+
+  switch (error.code) {
+    case 'auth/invalid-email':
+      mensaje = 'El correo no tiene formato valido (correo@ejemplo.com)';
+      break;
+    case 'auth/email-already-in-use':
+      mensaje = 'El correo ya está registrado';
+      break;
+    default:
+      mensaje = error.message;
+      break;
+  }
+
+  await this.mostrarAlert('Error', mensaje);
+}
 
       this.router.navigate(['/tabs/tab1']);
 

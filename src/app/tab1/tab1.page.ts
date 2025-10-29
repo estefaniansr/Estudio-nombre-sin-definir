@@ -19,7 +19,7 @@ import {
   updateProfile
 } from 'firebase/auth';
 import { db, auth } from '../../firebase-config';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { SpinnerService } from '../services/spinner.service';
 import { Capacitor } from '@capacitor/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -33,7 +33,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 })
 export class Tab1Page {
 
- @ViewChild('fileInputPerfil') fileInputPerfil!: ElementRef; // ← Agrega esta línea
+  @ViewChild('fileInputPerfil', { static: false }) fileInputPerfil!: ElementRef<HTMLInputElement>;
   fotoPerfil: string | null = null;
 
 
@@ -41,7 +41,7 @@ export class Tab1Page {
     this.fotoPerfil = null;
     // También eliminar de Firebase si es necesario
   }
-  
+
   user: User | null = null;
   nombre: string = '';
   fecha: string = '';
@@ -118,6 +118,7 @@ export class Tab1Page {
 
           this.nombre = data.nombre;
           this.fecha = data.fecha;
+          this.fotoPerfil = data.fotoPerfil;
 
           try {
             const fechanueva = this.fecha.split("-");
@@ -189,22 +190,27 @@ export class Tab1Page {
         await this.cargarDatosUsuario(user.uid);
         this.router.navigate(['/tabs/tab2']);
       } catch (error: any) {
-        console.error('Error login:', error);
-
         let mensaje = 'Error al iniciar sesión';
         switch (error.code) {
-          case 'auth/invalid-credential':
-          case 'auth/wrong-password':
-          case 'auth/user-not-found':
-            mensaje = 'Correo o contraseña incorrectos';
+          case 'auth/invalid-email':
+            mensaje = 'El correo no tiene formato valido (correo@ejemplo.com)';
             break;
-          case 'auth/too-many-requests':
-            mensaje = 'Se han realizado demasiados intentos. Esperá un momento e intentá de nuevo.';
+          case 'auth/user-not-found':
+            mensaje = 'El usuario no se encuentra registrado';
+            break;
+            case 'auth/wrong-password':
+            mensaje = 'Contraseña incorrecta';
+            break;
+            case 'auth/too-many-requests':
+            mensaje = 'Demasiado intentos fallidos';
+            break;
+            case 'auth/invalid-credential':
+            mensaje = 'Credenciales invalidas';
             break;
           default:
-            mensaje = error.message || 'Error al iniciar sesión';
+            mensaje = error.message;
+            break;
         }
-
         await this.mostrarAlert('Error', mensaje);
       }
     }, 'Iniciando sesión...');
@@ -301,7 +307,7 @@ export class Tab1Page {
       await signInWithRedirect(auth, provider);
 
       const result = await getRedirectResult(auth);
-      if (!result) return; 
+      if (!result) return;
 
       this.user = result.user;
 
@@ -356,7 +362,7 @@ export class Tab1Page {
     this.router.navigate(['/registro']);
   }
 
-  cambiarFotoPerfil() {
+   cambiarFotoPerfil() {
     if (Capacitor.getPlatform() === 'web') {
       this.fileInputPerfil.nativeElement.click();
     } else {
@@ -364,6 +370,7 @@ export class Tab1Page {
     }
   }
 
+  // 🔹 Móvil: abre galería
   async cambiarFotoPerfilMovil() {
     try {
       const image = await Camera.getPhoto({
@@ -372,21 +379,40 @@ export class Tab1Page {
         resultType: CameraResultType.DataUrl,
         source: CameraSource.Photos
       });
+
       this.fotoPerfil = image.dataUrl!;
+
+      // 🔹 Guardar en Firestore
+      const user = auth.currentUser;
+      if (user) {
+        const userDoc = doc(db, 'usuarios', user.uid);
+        await updateDoc(userDoc, { fotoPerfil: this.fotoPerfil });
+        console.log('Foto de perfil guardada en Firebase');
+      }
+
     } catch (error) {
       console.log('No se seleccionó ninguna foto', error);
     }
   }
 
+  // 🔹 Web: selecciona archivo desde el input
   onFileSelectedPerfil(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.fotoPerfil = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e: any) => {
+      this.fotoPerfil = e.target.result;
+
+      // 🔹 Guardar en Firestore
+      const user = auth.currentUser;
+      if (user) {
+        const userDoc = doc(db, 'usuarios', user.uid);
+        await updateDoc(userDoc, { fotoPerfil: this.fotoPerfil });
+        console.log('Foto de perfil guardada en Firebase');
+      }
+    };
+    reader.readAsDataURL(file);
   }
 }
 

@@ -74,7 +74,7 @@ export class AjustesPage {
   async mostrarToast(message: string) {
     const toast = await this.toastCtrl.create({
       message,
-      duration: 4000, 
+      duration: 4000, // 4 segundos
       position: 'top',
       color: 'primary'
     });
