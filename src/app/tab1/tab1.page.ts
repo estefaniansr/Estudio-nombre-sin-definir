@@ -160,87 +160,93 @@ export class Tab1Page {
 
   /**
 @function iniciarSesion
-@description Inicia sesión con correo y contraseña mediante Firebase Authentication. Valida los campos y verifica el correo del usuario.
-@param { string } usuario Correo electrónico del usuario.
-@param { string } password Contraseña del usuario.
+@description Inicia sesión con correo y contraseña mediante Firebase Authentication.
 @return { Promise<void> } Retorna una promesa cuando finaliza el intento de inicio de sesión.
 */
-  async iniciarSesion(usuario: string, password: string) {
+async iniciarSesion() {
+  // Obtener valores directamente de los inputs usando ViewChild
+  const usuarioInput = document.getElementById('usuario') as HTMLInputElement;
+  const passwordInput = document.getElementById('password') as HTMLInputElement;
+  
+  const usuario = usuarioInput?.value || '';
+  const password = passwordInput?.value || '';
 
-    if (!usuario || !password) {
-      await this.mostrarAlert('Error', 'Completa todos los campos');
-      return;
-    }
-
-    await this.spinner.run(async () => {
-      try {
-        const result = await signInWithEmailAndPassword(auth, usuario, password);
-        const user = result.user;
-
-        if (!user.emailVerified) {
-          await this.mostrarAlert(
-            'Correo no verificado',
-            'Tu correo no está verificado. Revisa tu bandeja de entrada y haz clic en el enlace de verificación antes de iniciar sesión.'
-          );
-          await auth.signOut();
-          return;
-        }
-
-        this.user = user;
-        await this.cargarDatosUsuario(user.uid);
-        this.router.navigate(['/tabs/tab2']);
-      } catch (error: any) {
-        let mensaje = 'Error al iniciar sesión';
-        switch (error.code) {
-          case 'auth/invalid-email':
-            mensaje = 'El correo no tiene formato valido (correo@ejemplo.com)';
-            break;
-          case 'auth/user-not-found':
-            mensaje = 'El usuario no se encuentra registrado';
-            break;
-            case 'auth/wrong-password':
-            mensaje = 'Contraseña incorrecta';
-            break;
-            case 'auth/too-many-requests':
-            mensaje = 'Demasiado intentos fallidos';
-            break;
-            case 'auth/invalid-credential':
-            mensaje = 'Credenciales invalidas';
-            break;
-          default:
-            mensaje = error.message;
-            break;
-        }
-        await this.mostrarAlert('Error', mensaje);
-      }
-    }, 'Iniciando sesión...');
+  if (!usuario || !password) {
+    await this.mostrarAlert('Error', 'Completa todos los campos');
+    return;
   }
 
-  async olvidePassword(usuario: string) {
-    if (!usuario) {
-      await this.mostrarAlert('Error', 'Ingresá tu correo para restablecer la contraseña');
-      return;
-    }
+  await this.spinner.run(async () => {
+    try {
+      const result = await signInWithEmailAndPassword(auth, usuario, password);
+      const user = result.user;
 
-    /**
+      if (!user.emailVerified) {
+        await this.mostrarAlert(
+          'Correo no verificado',
+          'Tu correo no está verificado. Revisa tu bandeja de entrada y haz clic en el enlace de verificación antes de iniciar sesión.'
+        );
+        await auth.signOut();
+        return;
+      }
+
+      this.user = user;
+      await this.cargarDatosUsuario(user.uid);
+      this.router.navigate(['/tabs/tab2']);
+    } catch (error: any) {
+      let mensaje = 'Error al iniciar sesión';
+      switch (error.code) {
+        case 'auth/invalid-email':
+          mensaje = 'El correo no tiene formato valido (correo@ejemplo.com)';
+          break;
+        case 'auth/user-not-found':
+          mensaje = 'El usuario no se encuentra registrado';
+          break;
+        case 'auth/wrong-password':
+          mensaje = 'Contraseña incorrecta';
+          break;
+        case 'auth/too-many-requests':
+          mensaje = 'Demasiado intentos fallidos';
+          break;
+        case 'auth/invalid-credential':
+          mensaje = 'Credenciales invalidas';
+          break;
+        default:
+          mensaje = error.message;
+          break;
+      }
+      await this.mostrarAlert('Error', mensaje);
+    }
+  }, 'Iniciando sesión...');
+}
+  /**
 @function olvidePassword
 @description Envía un correo al usuario para restablecer su contraseña si el correo existe.
-@param { string } usuario Correo electrónico del usuario que desea recuperar su contraseña.
 @return { Promise<void> } Retorna una promesa cuando se envía el correo o ocurre un error.
 */
-    await this.spinner.run(async () => {
-      try {
-        await sendPasswordResetEmail(auth, usuario);
-        await this.mostrarAlert(
-          'Correo enviado',
-          'Te enviamos un correo para restablecer tu contraseña. Revisá tu bandeja de entrada (y spam).'
-        );
-      } catch (error: any) {
-        console.error('Error restableciendo contraseña:', error);
-        await this.mostrarAlert('Error', error.message || 'No se pudo enviar el correo de restablecimiento');
-      }
-    }, 'Enviando correo...');
+async olvidePassword() {
+  // Obtener valor directamente del input usando ViewChild
+  const usuarioInput = document.getElementById('usuario') as HTMLInputElement;
+  const usuario = usuarioInput?.value || '';
+
+  if (!usuario) {
+    await this.mostrarAlert('Error', 'Ingresá tu correo para restablecer la contraseña');
+    return;
   }
+
+  await this.spinner.run(async () => {
+    try {
+      await sendPasswordResetEmail(auth, usuario);
+      await this.mostrarAlert(
+        'Correo enviado',
+        'Te enviamos un correo para restablecer tu contraseña. Revisá tu bandeja de entrada (y spam).'
+      );
+    } catch (error: any) {
+      console.error('Error restableciendo contraseña:', error);
+      await this.mostrarAlert('Error', error.message || 'No se pudo enviar el correo de restablecimiento');
+    }
+  }, 'Enviando correo...');
+}
 
   /**
 @function restablecerPassword

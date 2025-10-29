@@ -2,7 +2,6 @@
   <ion-toolbar>
     <ion-title *ngIf="!user">Login</ion-title>
     <ion-title *ngIf="user">Perfil</ion-title>
-
   </ion-toolbar>
 </ion-header>
 
@@ -31,13 +30,15 @@
         </ion-icon>
       </ion-item>
 
-      <button class="olvidePassword" type="button" (click)="olvidePassword(usuario.value?.toString() || '')">
+      <!-- CAMBIADO: Quitamos el parámetro -->
+      <button class="olvidePassword" type="button" (click)="olvidePassword()">
         Olvidé la contraseña
       </button>
     </form>
 
+    <!-- CAMBIADO: Quitamos los parámetros -->
     <ion-button class="btn-iniciarSesion" expand="full" fill="clear"
-      (click)="iniciarSesion(usuario.value?.toString() || '', password.value?.toString() || '')">
+      (click)="iniciarSesion()">
       Iniciar sesión
     </ion-button>
 
