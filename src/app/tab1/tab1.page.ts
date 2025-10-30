@@ -39,7 +39,6 @@ export class Tab1Page {
 
   eliminarFotoPerfil() {
     this.fotoPerfil = null;
-    // También eliminar de Firebase si es necesario
   }
 
   user: User | null = null;
@@ -164,7 +163,6 @@ export class Tab1Page {
 @return { Promise<void> } Retorna una promesa cuando finaliza el intento de inicio de sesión.
 */
 async iniciarSesion() {
-  // Obtener valores directamente de los inputs usando ViewChild
   const usuarioInput = document.getElementById('usuario') as HTMLInputElement;
   const passwordInput = document.getElementById('password') as HTMLInputElement;
   
@@ -225,7 +223,6 @@ async iniciarSesion() {
 @return { Promise<void> } Retorna una promesa cuando se envía el correo o ocurre un error.
 */
 async olvidePassword() {
-  // Obtener valor directamente del input usando ViewChild
   const usuarioInput = document.getElementById('usuario') as HTMLInputElement;
   const usuario = usuarioInput?.value || '';
 
@@ -376,7 +373,6 @@ async olvidePassword() {
     }
   }
 
-  // 🔹 Móvil: abre galería
   async cambiarFotoPerfilMovil() {
     try {
       const image = await Camera.getPhoto({
@@ -388,7 +384,6 @@ async olvidePassword() {
 
       this.fotoPerfil = image.dataUrl!;
 
-      // 🔹 Guardar en Firestore
       const user = auth.currentUser;
       if (user) {
         const userDoc = doc(db, 'usuarios', user.uid);
@@ -401,7 +396,6 @@ async olvidePassword() {
     }
   }
 
-  // 🔹 Web: selecciona archivo desde el input
   onFileSelectedPerfil(event: any) {
     const file = event.target.files[0];
     if (!file) return;
@@ -410,7 +404,6 @@ async olvidePassword() {
     reader.onload = async (e: any) => {
       this.fotoPerfil = e.target.result;
 
-      // 🔹 Guardar en Firestore
       const user = auth.currentUser;
       if (user) {
         const userDoc = doc(db, 'usuarios', user.uid);

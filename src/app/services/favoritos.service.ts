@@ -5,7 +5,7 @@ import { User } from 'firebase/auth';
 import { Observable } from 'rxjs';
 
 export interface Favorito {
-  id?: string;        // ID del documento en Firestore
+  id?: string;       
   titulo: string;
   descripcion: string;
   userId: string;

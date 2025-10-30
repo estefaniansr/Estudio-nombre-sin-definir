@@ -11,8 +11,8 @@ import { TabsPage } from './tabs.page';
     CommonModule,
     FormsModule,
     TabsPageRoutingModule,
-    TabsPage  // <- se importa porque es standalone
+    TabsPage  
   ]
-  // declarations: []  <-- NO va nada aquí
+
 })
 export class TabsPageModule {}
