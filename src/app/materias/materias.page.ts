@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Materia } from '../models/materia.model';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { Filesystem } from '@capacitor/filesystem';
+import { Filesystem, FilesystemDirectory } from '@capacitor/filesystem';
 import { FilestackService } from '../services/filestack.service';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { collection, addDoc, getFirestore, getDocs, getDoc, query, where, deleteDoc, doc, setDoc } from 'firebase/firestore';
@@ -14,6 +14,7 @@ import * as FileSaver from 'file-saver';
 import { SpinnerService } from '../services/spinner.service';
 import { Capacitor } from '@capacitor/core';
 import { auth } from '../../firebase-config';
+
 
 
 @Component({
@@ -108,7 +109,7 @@ export class MateriaPage {
   getFileExtension(url: string): string {
     try {
       const urlObj = new URL(url);
-      const pathname = urlObj.pathname; 
+      const pathname = urlObj.pathname;
       const parts = pathname.split('.');
       if (parts.length > 1) {
         return parts.pop()!.toLowerCase();
@@ -121,7 +122,7 @@ export class MateriaPage {
         'application/zip': 'zip',
       };
 
-      return 'bin'; 
+      return 'bin';
     } catch {
       return 'bin';
     }
@@ -194,10 +195,10 @@ export class MateriaPage {
     if (!this.user) return;
 
     const materiasRef = collection(db, "usuarios", this.user.uid, "materias");
-    const nuevaRef = doc(materiasRef); 
+    const nuevaRef = doc(materiasRef);
 
     const nuevaMateria = {
-      id: nuevaRef.id, 
+      id: nuevaRef.id,
       nombre: 'Nueva Materia',
       descripcion: '',
       imagen: 'assets/default.png',
@@ -210,13 +211,13 @@ export class MateriaPage {
       dislikes: 0,
       likedBy: [],
       dislikedBy: [],
-      ownerEmail: this.currentUserEmail!,  
+      ownerEmail: this.currentUserEmail!,
       ownerId: auth.currentUser?.uid!
     };
 
     await this.spinner.run(async () => {
       try {
-        await setDoc(nuevaRef, nuevaMateria); 
+        await setDoc(nuevaRef, nuevaMateria);
       } catch (err) {
         console.error('Error al crear materia:', err);
       }
@@ -378,10 +379,10 @@ export class MateriaPage {
 
     await alert.present();
   }
-/**
-@function cambiarFotoMateria
-@description Permite cambiar la imagen de una materia, subiendo una imagen desde el dispositivo.
-@param { Materia } materia Materia a la que se le cambiará la foto.*/
+  /**
+  @function cambiarFotoMateria
+  @description Permite cambiar la imagen de una materia, subiendo una imagen desde el dispositivo.
+  @param { Materia } materia Materia a la que se le cambiará la foto.*/
 
   cambiarFotoMateria(materia: Materia) {
     if (Capacitor.getPlatform() === 'web') {
@@ -410,7 +411,7 @@ export class MateriaPage {
     } catch (error) {
       console.log('No se seleccionó ninguna foto', error);
     }
-  } 
+  }
 
   /**
 @function onFileSelected
@@ -455,10 +456,12 @@ export class MateriaPage {
       await alert.present();
       return;
     }
+
     const zip = new JSZip();
     const folder = zip.folder(materia.nombre);
 
     try {
+      // Descargar archivos y agregarlos al ZIP
       for (const archivo of materia.archivos) {
         const response = await fetch(archivo.url);
         const blob = await response.blob();
@@ -472,7 +475,34 @@ export class MateriaPage {
       }
 
       const content = await zip.generateAsync({ type: 'blob' });
-      FileSaver.saveAs(content, `${materia.nombre}.zip`);
+
+      if (Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android') {
+        // Guardar el archivo como ZIP en el almacenamiento del dispositivo móvil usando Filesystem
+        const result = await Filesystem.writeFile({
+          path: `${materia.nombre}.zip`,
+          data: content,
+          directory: FilesystemDirectory.Documents,
+        });
+
+        // Abrir el archivo en una aplicación compatible en el dispositivo (solo iOS/Android)
+        const alert = await this.alertCtrl.create({
+          header: 'Archivo guardado',
+          message: 'El archivo ha sido guardado en tu dispositivo.',
+          buttons: [{
+            text: 'Abrir',
+            handler: async () => {
+              await Filesystem.requestPermissions();
+              const fileUrl = result.uri; // URL del archivo guardado
+              const browser = window.open(fileUrl, '_system'); // Abre el archivo en una aplicación externa (solo en móvil)
+              browser?.close();
+            }
+          }]
+        });
+        await alert.present();
+      } else {
+        // Para plataformas de escritorio, usar FileSaver.js
+        FileSaver.saveAs(content, `${materia.nombre}.zip`);
+      }
     } catch (error) {
       console.error('Error descargando materia:', error);
       const alert = await this.alertCtrl.create({
@@ -541,11 +571,11 @@ export class MateriaPage {
   }
 
 
-/**
-@function cargarMaterias
-@description Carga todas las materias del usuario actual desde Firestore y las guarda en el arreglo local.
-@return { Promise<void> } Retorna una promesa cuando las materias se han cargado correctamente.
-*/
+  /**
+  @function cargarMaterias
+  @description Carga todas las materias del usuario actual desde Firestore y las guarda en el arreglo local.
+  @return { Promise<void> } Retorna una promesa cuando las materias se han cargado correctamente.
+  */
   async cargarMaterias() {
     const user = getAuth().currentUser;
     if (!user) return;

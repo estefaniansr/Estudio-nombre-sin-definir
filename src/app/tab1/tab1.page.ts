@@ -290,6 +290,7 @@ export class Tab1Page {
       console.log('Login con Google exitoso:', this.user);
       this.router.navigate(['/tabs/tab2']);
     } catch (error) {
+      alert(error)
       console.error('Error al iniciar sesión con Google:', error);
       await this.mostrarAlert('Error', 'No se pudo iniciar sesión con Google');
     }
