@@ -60,6 +60,18 @@ export class Tab3Page {
     window.open(url, '_blank');
   }
 
+  /**
+* @function recargarMaterias
+* @description Vuelve a cargar las materias de la comunidad desde la base de datos.
+* @return { Promise<void> } Retorna una promesa que se resuelve cuando la recarga finaliza.
+*/
+  async recargarMaterias() {
+    await this.spinner.run(async () => {
+      await this.cargarFavoritos();
+    }, 'Cargando materias...');
+
+  }
+
 }
 
 
