@@ -3,7 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Auth, onAuthStateChanged, User } from '@angular/fire/auth';
-import { auth } from '../../firebase-config'; // tu config de Firebase
+import { auth } from '../../firebase-config';
 import { filter } from 'rxjs/operators';
 
 @Component({

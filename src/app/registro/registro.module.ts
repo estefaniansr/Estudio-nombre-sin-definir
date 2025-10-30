@@ -8,7 +8,7 @@ import { RouterModule } from '@angular/router';
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule,      // necesario para ngModel
+    FormsModule,     
     IonicModule,
     RouterModule.forChild([{ path: '', component: RegistroPage }])
   ],

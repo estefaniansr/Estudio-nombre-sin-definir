@@ -4,7 +4,7 @@ import { Tab1PageRoutingModule } from './tab1-routing.module';
 
 @NgModule({
   imports: [
-    Tab1Page, // 🔹 importás el componente standalone en vez de declararlo
+    Tab1Page, 
     Tab1PageRoutingModule
   ]
 })

@@ -16,12 +16,12 @@ const routes: Routes = [
       {
         path: 'tab2',
         loadChildren: () => import('../materias/materias.module').then(m => m.MateriaPageModule),
-         canActivate: [AuthGuard] // ← Y también aquí si quieres
+         canActivate: [AuthGuard]
       },
       {
         path: 'tab3',
         component: Tab3Page,
-              canActivate: [AuthGuard] // ← Y aquí
+              canActivate: [AuthGuard] 
       },
       {
         path: '',
@@ -31,12 +31,12 @@ const routes: Routes = [
       {
         path: 'comunidad',
         loadComponent: () => import('../comunidad/comunidad.page').then(m => m.ComunidadPage),
-        canActivate: [AuthGuard] // ← Y aquí
+        canActivate: [AuthGuard] 
       },
  {
     path: 'ajustes',
     loadComponent: () => import('../ajustes/ajustes.page').then(m => m.AjustesPage),
-           canActivate: [AuthGuard] // Solo usuarios logueados
+           canActivate: [AuthGuard] 
   },
 
     ]

@@ -11,22 +11,22 @@ const routes: Routes = [
   },
   {
     path: 'registro',
-    component: RegistroPage, // <-- usá component en vez de loadChildren
-     canActivate: [NoAuthGuard] // Solo usuarios NO logueados
+    component: RegistroPage,
+     canActivate: [NoAuthGuard] 
   },
   {
     path: 'ajustes',
     loadComponent: () => import('./ajustes/ajustes.page').then(m => m.AjustesPage),
-           canActivate: [AuthGuard] // Solo usuarios logueados
+           canActivate: [AuthGuard]
   },
   {
     path: 'comunidad',
     loadComponent: () => import('./comunidad/comunidad.page').then(m => m.ComunidadPage),
-             canActivate: [AuthGuard] // Solo usuarios logueados
+             canActivate: [AuthGuard]
   },
    {
     path: '',
-    redirectTo: 'tabs/tab1', // Redirigir al tab1 (login)
+    redirectTo: 'tabs/tab1', 
     pathMatch: 'full'
   }
 
