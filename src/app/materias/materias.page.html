@@ -20,9 +20,6 @@
     <ion-item-sliding *ngFor="let materia of materias">
 
       <ion-item-options side="start" [style.height]="materia.expandida ? '500px' : '265px'">
-        <ion-item-option color="primary" (click)="descargarMateria(materia)">
-          <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
-        </ion-item-option>
       </ion-item-options>
 
       <ion-item-options side="end" [style.height]="materia.expandida ? '500px' : '265px'">
